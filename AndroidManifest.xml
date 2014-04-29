@@ -23,17 +23,20 @@
             </intent-filter>
         </activity>
         <activity
-
             android:name="hcc.stepuplife.Accelerometer"
             android:label="@string/title_activity_accelerometer" >
         </activity>
-		<activity
+        <activity
             android:name="hcc.stepuplife.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
-		<activity
+        <activity
             android:name="hcc.stepuplife.CreateProfileActivity"
             android:label="@string/title_activity_create_profile" >
+        </activity>
+        <activity
+            android:name="hcc.stepuplife.ReminderActivity"
+            android:label="@string/title_activity_reminder" >
         </activity>
     </application>
 
