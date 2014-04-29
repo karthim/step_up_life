@@ -30,8 +30,10 @@ public final class R {
     public static final class id {
         public static final int LinearLayout1=0x7f080001;
         public static final int LoginScreenImage=0x7f080015;
-        public static final int action_settings=0x7f080017;
+        public static final int action_settings=0x7f08001a;
         public static final int button1=0x7f080010;
+        public static final int button2=0x7f080018;
+        public static final int button3=0x7f080019;
         public static final int buttonStart=0x7f080012;
         public static final int container=0x7f080000;
         public static final int editText1=0x7f080007;
@@ -39,6 +41,7 @@ public final class R {
         public static final int editTextX=0x7f080004;
         public static final int editTextZ=0x7f08000a;
         public static final int greetUser=0x7f080011;
+        public static final int imageView1=0x7f080017;
         public static final int linearLayout1=0x7f080014;
         public static final int loginButton=0x7f080016;
         public static final int loginLayout=0x7f080013;
@@ -58,16 +61,19 @@ public final class R {
         public static final int activity_create_profile=0x7f030001;
         public static final int activity_home=0x7f030002;
         public static final int activity_login=0x7f030003;
-        public static final int fragment_accelerometer=0x7f030004;
-        public static final int fragment_create_profile=0x7f030005;
-        public static final int fragment_home=0x7f030006;
-        public static final int fragment_login=0x7f030007;
+        public static final int activity_reminder=0x7f030004;
+        public static final int fragment_accelerometer=0x7f030005;
+        public static final int fragment_create_profile=0x7f030006;
+        public static final int fragment_home=0x7f030007;
+        public static final int fragment_login=0x7f030008;
+        public static final int fragment_reminder=0x7f030009;
     }
     public static final class menu {
         public static final int accelerometer=0x7f070000;
         public static final int create_profile=0x7f070001;
         public static final int home=0x7f070002;
         public static final int login=0x7f070003;
+        public static final int reminder=0x7f070004;
     }
     public static final class string {
         public static final int action_settings=0x7f050004;
@@ -76,6 +82,7 @@ public final class R {
         public static final int title_activity_accelerometer=0x7f050005;
         public static final int title_activity_create_profile=0x7f050008;
         public static final int title_activity_login=0x7f050006;
+        public static final int title_activity_reminder=0x7f050009;
         public static final int title_section1=0x7f050001;
         public static final int title_section2=0x7f050002;
         public static final int title_section3=0x7f050003;
