@@ -26,6 +26,10 @@
             android:name="hcc.stepuplife.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
+        <activity
+            android:name="hcc.stepuplife.CreateProfileActivity"
+            android:label="@string/title_activity_create_profile" >
+        </activity>
     </application>
 
 </manifest>
