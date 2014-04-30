@@ -1,27 +1,51 @@
 package hcc.stepuplife;
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.Button;
 
-public class Home extends Activity implements ActionBar.OnNavigationListener {
+public class Home extends Activity implements ActionBar.OnNavigationListener,
+		OnClickListener {
 
 	/**
 	 * The serialization (saved instance state) Bundle key representing the
 	 * current dropdown position.
 	 */
+	public static final String PREFS_NAME = "MyPrefsFile";
+	private SharedPreferences settings;
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+
+	private StepUpLifeService stepUpLifeService;
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			stepUpLifeService = ((StepUpLifeService.StepUpLifeServiceBinder) service)
+					.getService();
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			stepUpLifeService = null;
+		}
+
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +66,17 @@ public class Home extends Activity implements ActionBar.OnNavigationListener {
 								getString(R.string.title_section1),
 								getString(R.string.title_section2),
 								getString(R.string.title_section3), }), this);
+		settings = getSharedPreferences(PREFS_NAME, 0);
+		Button b = ((Button) findViewById(R.id.buttonStart));
+		if (settings.getBoolean("serviceRunning", false)) {
+			// button should display start
+			b.setText("Start !");
+			b.setTag(1, "start");
+		} else {
+			// button should display stop
+			b.setText("Stop !");
+			b.setTag(1, "stop");
+		}
 	}
 
 	@Override
@@ -121,6 +156,25 @@ public class Home extends Activity implements ActionBar.OnNavigationListener {
 			View rootView = inflater.inflate(R.layout.fragment_home, container,
 					false);
 			return rootView;
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.buttonStart:
+			String toStart = v.getTag(1).toString();
+			if (toStart.compareTo("start") == 0) {
+				Intent startIntent = new Intent(Home.this, StepUpLifeService.class);
+				startIntent.putExtra("start_monitoring", true);
+				startService(startIntent);
+			} else {
+				stopService(new Intent(Home.this, StepUpLifeService.class));
+			}
+			break;
+		default:
+			break;
 		}
 	}
 

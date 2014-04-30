@@ -38,6 +38,12 @@
             android:name="hcc.stepuplife.ReminderActivity"
             android:label="@string/title_activity_reminder" >
         </activity>
+
+        <service
+            android:name="hcc.stepuplife.StepUpLifeService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
