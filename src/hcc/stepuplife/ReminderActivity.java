@@ -88,7 +88,7 @@ public class ReminderActivity extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		switch (v.getId()) {
+		/*switch (v.getId()) {
 		case R.id.btn_reminder_snooze:
 			if (stepUpLifeService.isRunning())
 				stepUpLifeService.snoozeActivity();
@@ -110,6 +110,6 @@ public class ReminderActivity extends Activity implements OnClickListener {
 			break;
 		default:
 			break;
-		}
+		} */
 	}
 }
