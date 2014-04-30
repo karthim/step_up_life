@@ -15,13 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 public class ReminderActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.activity_reminder);
+		// setContentView(R.layout.activity_reminder);
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -30,7 +31,15 @@ public class ReminderActivity extends Activity implements OnClickListener {
 		Intent startIntent = new Intent(ReminderActivity.this,
 				StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
+
+		for (int buttonId : buttonIds) {
+			Button b = ((Button) findViewById(buttonId));
+			b.setOnClickListener(this);
+		}
 	}
+
+	int buttonIds[] = { R.id.btn_reminder_cancel, R.id.btn_reminder_snooze,
+			R.id.btn_reminder_doit };
 
 	private StepUpLifeService stepUpLifeService;
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -52,7 +61,7 @@ public class ReminderActivity extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.reminder, menu);
+		// getMenuInflater().inflate(R.menu.reminder, menu);
 		return true;
 	}
 
@@ -79,9 +88,10 @@ public class ReminderActivity extends Activity implements OnClickListener {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-/*			View rootView = inflater.inflate(R.layout.fragment_reminder,
-					container, false);
-			return rootView;*/
+			/*
+			 * View rootView = inflater.inflate(R.layout.fragment_reminder,
+			 * container, false); return rootView;
+			 */
 			return null;
 		}
 	}
@@ -102,7 +112,7 @@ public class ReminderActivity extends Activity implements OnClickListener {
 				Log.d("INFO", "Tried to snooze, but activity not running !");
 			break;
 		case R.id.btn_reminder_doit:
-			//@TODO: What to do ?
+			// @TODO: What to do ?
 			if (stepUpLifeService.isRunning())
 				stepUpLifeService.snoozeActivity();
 			else

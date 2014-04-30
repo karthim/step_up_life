@@ -77,6 +77,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			b.setText("Stop !");
 			b.setTag(1, "stop");
 		}
+		b.setOnClickListener(this);
 	}
 
 	@Override
