@@ -65,20 +65,22 @@ public class StepUpLifeService extends Service {
 	}
 
 	public enum ServiceState {
-		STARTED, STOPPED, RUNNING_MONITORING, RUNNING_NOT_MONITORING, SNOOZE;
+		STARTED, STOPPED, RUNNING_MONITORING, RUNNING_NOT_MONITORING, SNOOZE, SUSPENDED;
 
 		public String toString() {
 			switch (this) {
 			case STARTED:
 				return "StepUpLifeService started";
 			case STOPPED:
-				return "StepUpLifeService started";
+				return "StepUpLifeService stopped";
 			case RUNNING_MONITORING:
-				return "StepUpLifeService started";
+				return "StepUpLifeService running and monitoring activity";
 			case RUNNING_NOT_MONITORING:
-				return "StepUpLifeService started";
+				return "StepUpLifeService running and not monitoring activity";
 			case SNOOZE:
-				return "StepUpLifeService started";
+				return "StepUpLifeService running and snooze";
+			case SUSPENDED:
+				return "Suspended monitoring due to meeting/location";
 			default:
 				return "undefined";
 			}
@@ -92,6 +94,7 @@ public class StepUpLifeService extends Service {
 		case STARTED:
 		case RUNNING_MONITORING:
 		case RUNNING_NOT_MONITORING:
+		case SUSPENDED:
 			return true;
 		case SNOOZE:
 		case STOPPED:
@@ -125,6 +128,7 @@ public class StepUpLifeService extends Service {
 		super.onCreate();
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		serviceState = ServiceState.STOPPED;
 	}
 
 	@Override
