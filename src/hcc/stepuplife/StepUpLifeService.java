@@ -21,9 +21,9 @@ import android.util.Log;
 
 public class StepUpLifeService extends Service {
 
-	public static final String PREFS_NAME = "MyPrefsFile";
+	public static final String PREFS_NAME = "stepuplifePrefs";
 	private SharedPreferences settings;
-
+	private static final String LOGTAG = "S/StepUpLife";
 	private AlarmManager alarmManager;
 	private PendingIntent pendingIntent;
 	private ArrayList<IntentTriggerEvent> events;
@@ -86,8 +86,12 @@ public class StepUpLifeService extends Service {
 	}
 
 	private void setAlarmForNextEvent() {
+		if (events == null) {
+			Log.d(LOGTAG, "Events list is null !");
+			return;
+		}
 		if (events.isEmpty()) {
-			Log.d("INFO", "No more events in today's calendar");
+			Log.d(LOGTAG, "No more events in today's calendar");
 			return;
 		}
 		IntentTriggerEvent event = events.remove(0);
@@ -101,17 +105,17 @@ public class StepUpLifeService extends Service {
 
 		pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 		alarmManager.set(AlarmManager.RTC, timeOfTrigger, pendingIntent);
-		Log.d("INFO", "Added new event to alarmManager");
+		Log.d(LOGTAG, "Added new event to alarmManager");
 	}
 
 	private void processAlarmCalendarEvent(boolean stopMonitoring) {
-		Log.d("INFO", "Calendar event alarm received");
+		Log.d(LOGTAG, "Calendar event alarm received");
 		if (stopMonitoring) {
-			Log.d("INFO", "Stopping activity monitoring");
+			Log.d(LOGTAG, "Stopping activity monitoring");
 			setAlarmForNextEvent();
 			stopMonitoringActivity(false);
 		} else {
-			Log.d("INFO", "Starting activity monitoring");
+			Log.d(LOGTAG, "Starting activity monitoring");
 			setAlarmForNextEvent();
 			startMonitoringActivity();
 		}
@@ -182,34 +186,42 @@ public class StepUpLifeService extends Service {
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		serviceState = ServiceState.STOPPED;
+		Log.d(LOGTAG, "Service created");
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
+		Log.d(LOGTAG, "Service onStartCommand begins");
 		if (intent == null)
-			Log.d("INFO", "restarted service Step Up Life");
+			Log.d(LOGTAG, "restarted service Step Up Life");
 		else
-			Log.d("INFO", "started service Step Up Life");
-		settings.edit().putBoolean("serviceRunning", true);
+			Log.d(LOGTAG, "started service Step Up Life");
+
+		settings.edit().putBoolean("serviceRunning", true).commit();
 		serviceState = ServiceState.STARTED;
+
 		if (intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
+
 		IntentFilter startMeetingIntentFiler = new IntentFilter(
 				ALARM_INTENT_START_ACTION);
+		registerReceiver(meetingReceiver, startMeetingIntentFiler);
+
 		IntentFilter stopMeetingIntentFiler = new IntentFilter(
 				ALARM_INTENT_STOP_ACTION);
-		registerReceiver(meetingReceiver, startMeetingIntentFiler);
 		registerReceiver(meetingReceiver, stopMeetingIntentFiler);
 
+		Log.d(LOGTAG, "Service onStartCommand ends");
 		return Service.START_STICKY;
 	}
 
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+		Log.d(LOGTAG, "Destroying service");
 		super.onDestroy();
-		settings.edit().putBoolean("serviceRunning", false);
+		settings.edit().putBoolean("serviceRunning", false).commit();
 		stopMonitoringActivity(true);
 		doCleanUp();
 	}
@@ -228,9 +240,11 @@ public class StepUpLifeService extends Service {
 
 	public void startMonitoringActivity() {
 		// TODO Auto-generated method stub
+		Log.d(LOGTAG, "Started activity monitoring");
 		settings.edit().putBoolean("monitoring", true);
 		serviceState = ServiceState.RUNNING_MONITORING;
 		setAlarmForNextEvent();
+		Log.d(LOGTAG, "Started activity monitoring");
 	}
 
 	public void stopMonitoringActivity(boolean endService) {
@@ -239,7 +253,9 @@ public class StepUpLifeService extends Service {
 		serviceState = ServiceState.RUNNING_NOT_MONITORING;
 		if (endService) {
 			// save summary
+
 		}
+		Log.d(LOGTAG, "Stopped activity monitoring");
 	}
 
 	public void snoozeActivity() {
@@ -266,6 +282,7 @@ public class StepUpLifeService extends Service {
 	}
 
 	public void doCleanUp() {
+		Log.d(LOGTAG, "Unregistering broadcast receiver");
 		unregisterReceiver(meetingReceiver);
 	}
 

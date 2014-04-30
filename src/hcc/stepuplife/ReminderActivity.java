@@ -123,4 +123,11 @@ public class ReminderActivity extends Activity implements OnClickListener {
 			break;
 		} */
 	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		unbindService(mConnection);
+	}
 }

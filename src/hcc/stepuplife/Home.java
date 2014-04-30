@@ -4,12 +4,12 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +26,11 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	 * The serialization (saved instance state) Bundle key representing the
 	 * current dropdown position.
 	 */
-	public static final String PREFS_NAME = "MyPrefsFile";
+	public static final String PREFS_NAME = "stepuplifePrefs";
 	private SharedPreferences settings;
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+	private final String START_TEXT = "Start !";
+	private final String STOP_TEXT = "Stop !";
 
 	private StepUpLifeService stepUpLifeService;
 
@@ -53,29 +55,34 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		setContentView(R.layout.activity_home);
 
 		// Set up the action bar to show a dropdown list.
-		final ActionBar actionBar = getActionBar();
-		actionBar.setDisplayShowTitleEnabled(false);
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-		// Set up the dropdown list navigation in the action bar.
-		actionBar.setListNavigationCallbacks(
-		// Specify a SpinnerAdapter to populate the dropdown list.
-				new ArrayAdapter<String>(actionBar.getThemedContext(),
-						android.R.layout.simple_list_item_1,
-						android.R.id.text1, new String[] {
-								getString(R.string.title_section1),
-								getString(R.string.title_section2),
-								getString(R.string.title_section3), }), this);
+		/*
+		 * final ActionBar actionBar = getActionBar();
+		 * actionBar.setDisplayShowTitleEnabled(false);
+		 * actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		 * 
+		 * // Set up the dropdown list navigation in the action bar.
+		 * actionBar.setListNavigationCallbacks( // Specify a SpinnerAdapter to
+		 * populate the dropdown list. new
+		 * ArrayAdapter<String>(actionBar.getThemedContext(),
+		 * android.R.layout.simple_list_item_1, android.R.id.text1, new String[]
+		 * { getString(R.string.title_section1),
+		 * getString(R.string.title_section2),
+		 * getString(R.string.title_section3), }), this);
+		 */
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		Button b = ((Button) findViewById(R.id.buttonStart));
+		if (b == null)
+			Log.d("INFO", "Button start is null");
+		else
+			Log.d("INFO", "Button start is not null");
 		if (settings.getBoolean("serviceRunning", false)) {
 			// button should display start
-			b.setText("Start !");
-			b.setTag(1, "start");
+			Log.d("INFO", "Service running");
+			b.setText(STOP_TEXT);
 		} else {
 			// button should display stop
-			b.setText("Stop !");
-			b.setTag(1, "stop");
+			Log.d("INFO", "Service not running");
+			b.setText(START_TEXT);
 		}
 		b.setOnClickListener(this);
 	}
@@ -163,15 +170,23 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		Button b = (Button) v;
 		switch (v.getId()) {
 		case R.id.buttonStart:
-			String toStart = v.getTag(1).toString();
-			if (toStart.compareTo("start") == 0) {
-				Intent startIntent = new Intent(Home.this, StepUpLifeService.class);
+			String toStart = (String) b.getText();
+			if (toStart.compareTo(START_TEXT) == 0) {
+
+				Intent startIntent = new Intent(Home.this,
+						StepUpLifeService.class);
 				startIntent.putExtra("start_monitoring", true);
 				startService(startIntent);
+
+				Log.d("A/Home", "starting service");
+				b.setText(STOP_TEXT);
 			} else {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
+				Log.d("A/Home", "stopping service");
+				b.setText(START_TEXT);
 			}
 			break;
 		default:

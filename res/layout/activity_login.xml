@@ -1,8 +1,45 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/loginLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="hcc.stepuplife.LoginActivity"
-    tools:ignore="MergeRootFrame" />
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="hcc.stepuplife.LoginActivity" >
 
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center|center_vertical"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/LoginScreenImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45dp"
+            android:src="@drawable/stepuplife" />
+
+        <ImageView
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="34dp"
+            android:clickable="true"
+            android:src="@drawable/login" />
+
+        <ImageView
+            android:id="@+id/loginLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:paddingTop="20px"
+            android:src="@drawable/register" />
+    </LinearLayout>
+
+</RelativeLayout>
