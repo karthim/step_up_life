@@ -98,6 +98,7 @@ public class ReminderActivity extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		//Consider using startActivityWithResult() from service
 		/*switch (v.getId()) {
 		case R.id.btn_reminder_snooze:
 			if (stepUpLifeService.isRunning())

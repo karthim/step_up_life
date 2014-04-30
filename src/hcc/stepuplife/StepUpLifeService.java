@@ -5,30 +5,84 @@ import java.util.ArrayList;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.provider.CalendarContract.Calendars;
+import android.provider.CalendarContract.Events;
 import android.util.Log;
 
 public class StepUpLifeService extends Service {
 
 	public static final String PREFS_NAME = "MyPrefsFile";
-	SharedPreferences settings;
+	private SharedPreferences settings;
 
-	AlarmManager alarmManager;
-	PendingIntent pendingIntent;
-	ArrayList<IntentTriggerEvent> events;
+	private AlarmManager alarmManager;
+	private PendingIntent pendingIntent;
+	private ArrayList<IntentTriggerEvent> events;
+	private final String ALARM_INTENT_START_ACTION = "hcc.stepuplife.meeting_start";
+	private final String ALARM_INTENT_STOP_ACTION = "hcc.stepuplife.meeting_stop";
 
-	class IntentTriggerEvent{
-		public long timeOfTrigger; //RTC time
+	private BroadcastReceiver meetingReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			boolean stopMonitoring = true;
+			if (intent.getAction().equals(
+					StepUpLifeService.this.ALARM_INTENT_START_ACTION))
+				stopMonitoring = false;
+			StepUpLifeService.this.processAlarmCalendarEvent(stopMonitoring);
+		}
+
+	};
+
+	class IntentTriggerEvent {
+		public long timeOfTrigger; // RTC time
 		public boolean isStartEvent;
+
+		public IntentTriggerEvent(long timeOfTrigger, boolean isStartEvent) {
+			this.timeOfTrigger = timeOfTrigger;
+			this.isStartEvent = isStartEvent;
+		}
 	}
-	
+
 	private void populateEvents() {
 		// Query Calendar Provider, and populate today's events in events list.
 		events = new ArrayList<IntentTriggerEvent>();
+		Long now = System.currentTimeMillis();
+		Long twelveHoursFromNow = now + 43200 * 1000;
+		String[] EVENT_PROJECTION = new String[] { Events.DTSTART, // 0
+				Events.DTEND // 3
+		};
+		int PROJECTION_STARTTIME_INDEX = 0;
+		int PROJECTION_STOPTIME_INDEX = 1;
+		Cursor cur = null;
+		ContentResolver cr = getContentResolver();
+		Uri uri = Events.CONTENT_URI;
+		String selection = "((" + Events.DTSTART + " > ?) AND (" + Events.DTEND
+				+ " <= ?)";
+		String[] selectionArgs = new String[] { now.toString(),
+				twelveHoursFromNow.toString() };
+		// Submit the query and get a Cursor object back.
+		cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
+		// Note, assuming there are no overlapping events
+		while (cur.moveToNext()) {
+			// Get the field values
+			long startTime = cur.getLong(PROJECTION_STARTTIME_INDEX);
+			long stopTime = cur.getLong(PROJECTION_STOPTIME_INDEX);
+
+			events.add(new IntentTriggerEvent(startTime, true));
+			events.add(new IntentTriggerEvent(stopTime, false));
+			// Do something with the values...
+		}
 	}
 
 	private void setAlarmForNextEvent() {
@@ -39,11 +93,12 @@ public class StepUpLifeService extends Service {
 		IntentTriggerEvent event = events.remove(0);
 		long timeOfTrigger = 0;
 		boolean eventypeStart = true;
-		Intent alarmIntent = new Intent("STEP_UP_LIFE_MEETING_ALARM");
-		if(eventypeStart)
-			alarmIntent.putExtra("start", true);
+		Intent alarmIntent;
+		if (eventypeStart)
+			alarmIntent = new Intent(ALARM_INTENT_START_ACTION);
 		else
-			alarmIntent.putExtra("start", false);
+			alarmIntent = new Intent(ALARM_INTENT_STOP_ACTION);
+
 		pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 		alarmManager.set(AlarmManager.RTC, timeOfTrigger, pendingIntent);
 		Log.d("INFO", "Added new event to alarmManager");
@@ -51,13 +106,11 @@ public class StepUpLifeService extends Service {
 
 	private void processAlarmCalendarEvent(boolean stopMonitoring) {
 		Log.d("INFO", "Calendar event alarm received");
-		if(stopMonitoring){
+		if (stopMonitoring) {
 			Log.d("INFO", "Stopping activity monitoring");
 			setAlarmForNextEvent();
 			stopMonitoringActivity(false);
-		}
-		else
-		{
+		} else {
 			Log.d("INFO", "Starting activity monitoring");
 			setAlarmForNextEvent();
 			startMonitoringActivity();
@@ -142,6 +195,13 @@ public class StepUpLifeService extends Service {
 		serviceState = ServiceState.STARTED;
 		if (intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
+		IntentFilter startMeetingIntentFiler = new IntentFilter(
+				ALARM_INTENT_START_ACTION);
+		IntentFilter stopMeetingIntentFiler = new IntentFilter(
+				ALARM_INTENT_STOP_ACTION);
+		registerReceiver(meetingReceiver, startMeetingIntentFiler);
+		registerReceiver(meetingReceiver, stopMeetingIntentFiler);
+
 		return Service.START_STICKY;
 	}
 
@@ -151,6 +211,7 @@ public class StepUpLifeService extends Service {
 		super.onDestroy();
 		settings.edit().putBoolean("serviceRunning", false);
 		stopMonitoringActivity(true);
+		doCleanUp();
 	}
 
 	@Override
@@ -203,4 +264,9 @@ public class StepUpLifeService extends Service {
 		updateCancelCounter();
 		startMonitoringActivity();
 	}
+
+	public void doCleanUp() {
+		unregisterReceiver(meetingReceiver);
+	}
+
 }
