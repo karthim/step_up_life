@@ -1,6 +1,11 @@
 package hcc.stepuplife;
 
+import java.util.ArrayList;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -11,6 +16,53 @@ public class StepUpLifeService extends Service {
 
 	public static final String PREFS_NAME = "MyPrefsFile";
 	SharedPreferences settings;
+
+	AlarmManager alarmManager;
+	PendingIntent pendingIntent;
+	ArrayList<IntentTriggerEvent> events;
+
+	class IntentTriggerEvent{
+		public long timeOfTrigger; //RTC time
+		public boolean isStartEvent;
+	}
+	
+	private void populateEvents() {
+		// Query Calendar Provider, and populate today's events in events list.
+		events = new ArrayList<IntentTriggerEvent>();
+	}
+
+	private void setAlarmForNextEvent() {
+		if (events.isEmpty()) {
+			Log.d("INFO", "No more events in today's calendar");
+			return;
+		}
+		IntentTriggerEvent event = events.remove(0);
+		long timeOfTrigger = 0;
+		boolean eventypeStart = true;
+		Intent alarmIntent = new Intent("STEP_UP_LIFE_MEETING_ALARM");
+		if(eventypeStart)
+			alarmIntent.putExtra("start", true);
+		else
+			alarmIntent.putExtra("start", false);
+		pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+		alarmManager.set(AlarmManager.RTC, timeOfTrigger, pendingIntent);
+		Log.d("INFO", "Added new event to alarmManager");
+	}
+
+	private void processAlarmCalendarEvent(boolean stopMonitoring) {
+		Log.d("INFO", "Calendar event alarm received");
+		if(stopMonitoring){
+			Log.d("INFO", "Stopping activity monitoring");
+			setAlarmForNextEvent();
+			stopMonitoringActivity(false);
+		}
+		else
+		{
+			Log.d("INFO", "Starting activity monitoring");
+			setAlarmForNextEvent();
+			startMonitoringActivity();
+		}
+	}
 
 	public enum ServiceState {
 		STARTED, STOPPED, RUNNING_MONITORING, RUNNING_NOT_MONITORING, SNOOZE;
@@ -72,6 +124,7 @@ public class StepUpLifeService extends Service {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		settings = getSharedPreferences(PREFS_NAME, 0);
+		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 	}
 
 	@Override
@@ -112,6 +165,7 @@ public class StepUpLifeService extends Service {
 		// TODO Auto-generated method stub
 		settings.edit().putBoolean("monitoring", true);
 		serviceState = ServiceState.RUNNING_MONITORING;
+		setAlarmForNextEvent();
 	}
 
 	public void stopMonitoringActivity(boolean endService) {
