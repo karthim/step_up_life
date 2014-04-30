@@ -10,72 +10,101 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="hcc.stepuplife.Accelerometer$PlaceholderFragment" >
 
-    <TableRow
-        android:id="@+id/tableRow1"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="2"
+        android:orientation="vertical" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" >
 
-        <TextView
-            android:id="@+id/textViewX"
+            <TextView
+                android:id="@+id/textViewX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingRight="25dp"
+                android:text="X" />
+
+            <EditText
+                android:id="@+id/editTextX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:ems="10" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="25dp"
-            android:text="X" />
+            android:layout_weight="1" >
 
-        <EditText
-            android:id="@+id/editTextX"
+            <TextView
+                android:id="@+id/textViewY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="25dp"
+                android:text="Y" />
+
+            <EditText
+                android:id="@+id/editText1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10" >
+            android:layout_weight="1" >
 
-            <requestFocus />
-        </EditText>
+            <TextView
+                android:id="@+id/textViewZ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="25dp"
+                android:text="Z" />
 
-    </TableRow>
+            <EditText
+                android:id="@+id/editTextZ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" />
+        </TableRow>
+    </LinearLayout>
 
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/activityRecognition"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1" >
+        android:layout_weight="5"
+        android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/textViewY"
+            android:id="@+id/textViewMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="25dp"
-            android:text="Y" />
-
-        <EditText
-            android:id="@+id/editText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1"
-            android:ems="10" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" >
+            android:layout_gravity="center"
+            android:text="Identified Activity"
+            android:textSize="20dp" />
 
         <TextView
-            android:id="@+id/textViewZ"
+            android:id="@+id/textViewCurActivity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="25dp"
-            android:text="Z" />
-
-        <EditText
-            android:id="@+id/editTextZ"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10" />
-
-    </TableRow>
+            android:layout_gravity="center"
+            android:layout_marginTop="80dp"
+            android:text="----------" />
+    </LinearLayout>
 
 </LinearLayout>
