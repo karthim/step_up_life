@@ -37,14 +37,16 @@ public class StepUpLifeService extends Service {
 	}
 
 	private BroadcastReceiver meetingReceiver = new BroadcastReceiver() {
+		private final String LOGTAG = "B/meetingReceiver";
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			boolean stopMonitoring = true;
+			boolean stopMonitoring = false;
+			Log.d(LOGTAG, "Received intent with action " + intent.getAction());
 			if (intent.getAction().equals(
 					CalendarEventManager.ALARM_INTENT_START_ACTION))
-				stopMonitoring = false;
+				stopMonitoring = true;
 			StepUpLifeService.this.processAlarmCalendarEvent(stopMonitoring);
 		}
 
@@ -238,6 +240,7 @@ public class StepUpLifeService extends Service {
 	public void doCleanUp() {
 		Log.d(LOGTAG, "Unregistering broadcast receiver");
 		unregisterReceiver(meetingReceiver);
+		CalendarEventManager.release();
 	}
 
 }

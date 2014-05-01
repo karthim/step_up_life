@@ -85,6 +85,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			b.setText(START_TEXT);
 		}
 		b.setOnClickListener(this);
+		//CalendarEventManager.init(this);
 	}
 
 	@Override
