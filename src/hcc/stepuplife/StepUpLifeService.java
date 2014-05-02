@@ -194,10 +194,6 @@ public class StepUpLifeService extends Service {
 				CalendarEventManager.ALARM_INTENT_STOP_ACTION);
 		registerReceiver(meetingReceiver, stopMeetingIntentFiler);
 
-		IntentFilter notificationClickedIntentFiler = new IntentFilter(
-				NOTIFICATION_INTENT_USER_CHOICE);
-		registerReceiver(meetingReceiver, notificationClickedIntentFiler);
-
 		if (intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
 
