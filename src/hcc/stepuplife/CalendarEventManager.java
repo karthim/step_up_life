@@ -75,7 +75,7 @@ public class CalendarEventManager {
 	private void populateEventsList() {
 		// Query Calendar Provider, and populate today's events in events list.
 		events = new ArrayList<IntentTriggerEvent>();
-		String userGmailID = "androidflair@gmail.com";
+		String userGmailID = "devj1988@gmail.com";
 		String[] EVENT_PROJECTION = new String[] { Calendars._ID, // 0
 				Calendars.ACCOUNT_NAME, // 1
 				Calendars.CALENDAR_DISPLAY_NAME, // 2
