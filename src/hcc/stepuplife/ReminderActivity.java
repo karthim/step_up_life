@@ -22,12 +22,8 @@ public class ReminderActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// setContentView(R.layout.activity_reminder);
+		setContentView(R.layout.activity_reminder);
 
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
 		Intent startIntent = new Intent(ReminderActivity.this,
 				StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -98,30 +94,31 @@ public class ReminderActivity extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		//Consider using startActivityWithResult() from service
-		/*switch (v.getId()) {
-		case R.id.btn_reminder_snooze:
-			if (stepUpLifeService.isRunning())
-				stepUpLifeService.snoozeActivity();
-			else
-				Log.d("INFO", "Tried to snooze, but activity not running !");
-			break;
-		case R.id.btn_reminder_cancel:
-			if (stepUpLifeService.isRunning())
-				stepUpLifeService.cancelRecommendedExercise();
-			else
-				Log.d("INFO", "Tried to snooze, but activity not running !");
-			break;
-		case R.id.btn_reminder_doit:
-			// @TODO: What to do ?
-			if (stepUpLifeService.isRunning())
-				stepUpLifeService.snoozeActivity();
-			else
-				Log.d("INFO", "Tried to snooze, but activity not running !");
-			break;
-		default:
-			break;
-		} */
+		// Consider using startActivityWithResult() from service
+
+//		switch (v.getId()) {
+//		case R.id.btn_reminder_snooze:
+//			if (stepUpLifeService.isRunning())
+//				stepUpLifeService.snoozeActivity();
+//			else
+//				Log.d("INFO", "Tried to snooze, but activity not running !");
+//			break;
+//		case R.id.btn_reminder_cancel:
+//			if (stepUpLifeService.isRunning())
+//				stepUpLifeService.cancelRecommendedExercise();
+//			else
+//				Log.d("INFO", "Tried to snooze, but activity not running !");
+//			break;
+//		case R.id.btn_reminder_doit: // @TODO: What to do ?
+//			if (stepUpLifeService.isRunning())
+//				stepUpLifeService.snoozeActivity();
+//			else
+//				Log.d("INFO", "Tried to snooze, but activity not running !");
+//			break;
+//		default:
+//			break;
+//		}
+
 	}
 
 	@Override

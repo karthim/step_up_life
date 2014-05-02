@@ -1,22 +1,16 @@
 package hcc.stepuplife;
 
-import java.util.ArrayList;
-
-import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.provider.CalendarContract.Calendars;
-import android.provider.CalendarContract.Events;
 import android.util.Log;
 
 public class StepUpLifeService extends Service {
@@ -27,6 +21,7 @@ public class StepUpLifeService extends Service {
 
 	private int exerciseCount;
 	private int target = 10;
+	private NotificationManager notificationManager;
 
 	/**
 	 * @return - integer denoting percent of goal reached
@@ -45,12 +40,42 @@ public class StepUpLifeService extends Service {
 			boolean stopMonitoring = false;
 			Log.d(LOGTAG, "Received intent with action " + intent.getAction());
 			if (intent.getAction().equals(
-					CalendarEventManager.ALARM_INTENT_START_ACTION))
+					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
 				stopMonitoring = true;
-			StepUpLifeService.this.processAlarmCalendarEvent(stopMonitoring);
+				StepUpLifeService.this.processAlarmCalendarEvent(true);
+			} else if (intent.getAction().equals(
+					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
+				StepUpLifeService.this.processAlarmCalendarEvent(false);
+			}
+
 		}
 
 	};
+
+	public void createNotification() {
+		// Prepare intent which is triggered if the
+		// notification is selected
+		Intent intent = new Intent(this, ReminderActivity.class);
+		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent,
+				Intent.FLAG_ACTIVITY_NEW_TASK);
+
+		// Build notification
+
+		Notification noti = new Notification.Builder(this)
+				.setContentTitle("Step Up Life")
+				.setContentText("Time for some exercise !!!")
+				.setSmallIcon(R.drawable.ic_launcher).setContentIntent(pIntent)
+				.build();
+		// .addAction(R.drawable.ic_launcher, "Call", pIntent)
+		// .addAction(R.drawable.ic_launcher, "More", pIntent)
+		// .addAction(R.drawable.ic_launcher, "And more", pIntent)
+
+		// hide the notification after its selected
+		noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+		notificationManager.notify(0, noti);
+
+	}
 
 	/**
 	 * @param stopMonitoring
@@ -155,11 +180,11 @@ public class StepUpLifeService extends Service {
 		settings.edit().putBoolean("serviceRunning", true).commit();
 		serviceState = ServiceState.STARTED;
 
-		if (intent.getBooleanExtra("start_monitoring", false))
-			startMonitoringActivity();
-
 		// Initing calendar manager and registering receiver for meeting event
 		// intents
+
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
 		CalendarEventManager.init(this);
 		IntentFilter startMeetingIntentFiler = new IntentFilter(
 				CalendarEventManager.ALARM_INTENT_START_ACTION);
@@ -168,6 +193,13 @@ public class StepUpLifeService extends Service {
 		IntentFilter stopMeetingIntentFiler = new IntentFilter(
 				CalendarEventManager.ALARM_INTENT_STOP_ACTION);
 		registerReceiver(meetingReceiver, stopMeetingIntentFiler);
+
+		IntentFilter notificationClickedIntentFiler = new IntentFilter(
+				NOTIFICATION_INTENT_USER_CHOICE);
+		registerReceiver(meetingReceiver, notificationClickedIntentFiler);
+
+		if (intent.getBooleanExtra("start_monitoring", false))
+			startMonitoringActivity();
 
 		Log.d(LOGTAG, "Service onStartCommand ends");
 		return Service.START_STICKY;
@@ -201,6 +233,8 @@ public class StepUpLifeService extends Service {
 		settings.edit().putBoolean("monitoring", true);
 		serviceState = ServiceState.RUNNING_MONITORING;
 		Log.d(LOGTAG, "Started activity monitoring");
+
+		Log.d(LOGTAG, "Creating notification");
 	}
 
 	public void stopMonitoringActivity(boolean endService) {
