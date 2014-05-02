@@ -17,11 +17,11 @@
         android:orientation="vertical" >
 
         <TextView
-                android:id="@+id/textViewMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Create Profile" />
-        
+            android:id="@+id/textViewMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Profile" />
+
         <EditText
             android:id="@+id/editText1"
             android:layout_width="match_parent"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:hint="Age"
             android:inputType="numberSigned" />
-        
+
         <TextView
             android:id="@+id/textViewMessage"
             android:layout_width="wrap_content"
@@ -65,6 +65,15 @@
                 android:text="Female" />
         </RadioGroup>
 
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="gmail id"
+            android:text="@string/gmailID" >
+
+        </EditText>
+
         <Button
             android:id="@+id/buttonCreate"
             android:layout_width="160dp"
@@ -72,7 +81,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
             android:text="Create" />
-
     </LinearLayout>
 
 </RelativeLayout>

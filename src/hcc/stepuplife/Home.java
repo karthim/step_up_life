@@ -62,25 +62,24 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	private final String START_TEXT = "Start !";
 	private final String STOP_TEXT = "Stop !";
-    private REQUEST_TYPE mRequestType;
-    /*
-     * Holds activity recognition data, in the form of
-     * strings that can contain markup
-     */
-    private ArrayAdapter<Spanned> mStatusAdapter;
-    /*
-     *  Intent filter for incoming broadcasts from the
-     *  IntentService.
-     */
-    IntentFilter mBroadcastFilter;
-    // Instance of a local broadcast manager
-    private LocalBroadcastManager mBroadcastManager;
+	private REQUEST_TYPE mRequestType;
+	/*
+	 * Holds activity recognition data, in the form of strings that can contain
+	 * markup
+	 */
+	private ArrayAdapter<Spanned> mStatusAdapter;
+	/*
+	 * Intent filter for incoming broadcasts from the IntentService.
+	 */
+	IntentFilter mBroadcastFilter;
+	// Instance of a local broadcast manager
+	private LocalBroadcastManager mBroadcastManager;
 
-    // The activity recognition update request object
-    private DetectionRequester mDetectionRequester;
+	// The activity recognition update request object
+	private DetectionRequester mDetectionRequester;
 
-    // The activity recognition update removal object
-    private DetectionRemover mDetectionRemover;
+	// The activity recognition update removal object
+	private DetectionRemover mDetectionRemover;
 	private StepUpLifeService stepUpLifeService;
 
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -118,10 +117,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		 * getString(R.string.title_section2),
 		 * getString(R.string.title_section3), }), this);
 		 */
-		
-		//Button b = ((Button) findViewById(R.id.buttonStart));
-		//b.setOnClickListener(this);
-		
+
+		// Button b = ((Button) findViewById(R.id.buttonStart));
+		// b.setOnClickListener(this);
+
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		Button b = ((Button) findViewById(R.id.buttonStart));
 		if (b == null)
@@ -138,92 +137,97 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			b.setText(START_TEXT);
 		}
 		b.setOnClickListener(this);
-		//CalendarEventManager.init(this);*/
-		
+		// CalendarEventManager.init(this);*/
+
 		// Activity Recognition
-        // Set the broadcast receiver intent filer
-        mBroadcastManager = LocalBroadcastManager.getInstance(this);
+		// Set the broadcast receiver intent filer
+		mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-        // Create a new Intent filter for the broadcast receiver
-        mBroadcastFilter = new IntentFilter(ActivityUtils.ACTION_REFRESH_STATUS_LIST);
-        mBroadcastFilter.addCategory(ActivityUtils.CATEGORY_LOCATION_SERVICES);
+		// Create a new Intent filter for the broadcast receiver
+		mBroadcastFilter = new IntentFilter(
+				ActivityUtils.ACTION_REFRESH_STATUS_LIST);
+		mBroadcastFilter.addCategory(ActivityUtils.CATEGORY_LOCATION_SERVICES);
 
-        // Get detection requester and remover objects
-        mDetectionRequester = new DetectionRequester(this);
-        mDetectionRemover = new DetectionRemover(this);
+		// Get detection requester and remover objects
+		mDetectionRequester = new DetectionRequester(this);
+		mDetectionRemover = new DetectionRemover(this);
 
 	}
-	
-    /*
-     * Handle results returned to this Activity by other Activities started with
-     * startActivityForResult(). In particular, the method onConnectionFailed() in
-     * DetectionRemover and DetectionRequester may call startResolutionForResult() to
-     * start an Activity that handles Google Play services problems. The result of this
-     * call returns here, to onActivityResult.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-        // Choose what to do based on the request code
-        switch (requestCode) {
+	/*
+	 * Handle results returned to this Activity by other Activities started with
+	 * startActivityForResult(). In particular, the method onConnectionFailed()
+	 * in DetectionRemover and DetectionRequester may call
+	 * startResolutionForResult() to start an Activity that handles Google Play
+	 * services problems. The result of this call returns here, to
+	 * onActivityResult.
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
 
-            // If the request code matches the code sent in onConnectionFailed
-            case ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST :
+		// Choose what to do based on the request code
+		switch (requestCode) {
 
-                switch (resultCode) {
-                    // If Google Play services resolved the problem
-                    case Activity.RESULT_OK:
+		// If the request code matches the code sent in onConnectionFailed
+		case ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST:
 
-                        // If the request was to start activity recognition updates
-                        if (ActivityUtils.REQUEST_TYPE.ADD == mRequestType) {
+			switch (resultCode) {
+			// If Google Play services resolved the problem
+			case Activity.RESULT_OK:
 
-                            // Restart the process of requesting activity recognition updates
-                            mDetectionRequester.requestUpdates();
+				// If the request was to start activity recognition updates
+				if (ActivityUtils.REQUEST_TYPE.ADD == mRequestType) {
 
-                        // If the request was to remove activity recognition updates
-                        } else if (ActivityUtils.REQUEST_TYPE.REMOVE == mRequestType ){
+					// Restart the process of requesting activity recognition
+					// updates
+					mDetectionRequester.requestUpdates();
 
-                                /*
-                                 * Restart the removal of all activity recognition updates for the 
-                                 * PendingIntent.
-                                 */
-                                mDetectionRemover.removeUpdates(
-                                    mDetectionRequester.getRequestPendingIntent());
+					// If the request was to remove activity recognition updates
+				} else if (ActivityUtils.REQUEST_TYPE.REMOVE == mRequestType) {
 
-                        }
-                    break;
+					/*
+					 * Restart the removal of all activity recognition updates
+					 * for the PendingIntent.
+					 */
+					mDetectionRemover.removeUpdates(mDetectionRequester
+							.getRequestPendingIntent());
 
-                    // If any other result was returned by Google Play services
-                    default:
+				}
+				break;
 
-                        // Report that Google Play services was unable to resolve the problem.
-                        //Log.d(ActivityUtils.APPTAG, getString(R.string.no_resolution));
-                }
+			// If any other result was returned by Google Play services
+			default:
 
-            // If any other request code was received
-            default:
-               // Report that this Activity received an unknown requestCode
-               //Log.d(ActivityUtils.APPTAG, getString(R.string.unknown_activity_request_code, requestCode));
-               break;
-        }
-    }
+				// Report that Google Play services was unable to resolve the
+				// problem.
+				// Log.d(ActivityUtils.APPTAG,
+				// getString(R.string.no_resolution));
+			}
 
-    /*
-     * Register the broadcast receiver and update the log of activity updates
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
+			// If any other request code was received
+		default:
+			// Report that this Activity received an unknown requestCode
+			// Log.d(ActivityUtils.APPTAG,
+			// getString(R.string.unknown_activity_request_code, requestCode));
+			break;
+		}
+	}
 
-        // Register the broadcast receiver
-        mBroadcastManager.registerReceiver(
-                updateListReceiver,
-                mBroadcastFilter);
+	/*
+	 * Register the broadcast receiver and update the log of activity updates
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
 
-        // Load updated activity history
-        updateActivityHistory();
-    }
+		// Register the broadcast receiver
+		mBroadcastManager
+				.registerReceiver(updateListReceiver, mBroadcastFilter);
 
+		// Load updated activity history
+		updateActivityHistory();
+	}
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -304,42 +308,43 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			return rootView;
 		}
 	}
-	
-    /**
-     * Verify that Google Play services is available before making a request.
-     *
-     * @return true if Google Play services is available, otherwise false
-     */
-    private boolean servicesConnected() {
 
-        // Check that Google Play services is available
-        int resultCode =
-                GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+	/**
+	 * Verify that Google Play services is available before making a request.
+	 * 
+	 * @return true if Google Play services is available, otherwise false
+	 */
+	private boolean servicesConnected() {
 
-        // If Google Play services is available
-        if (ConnectionResult.SUCCESS == resultCode) {
+		// Check that Google Play services is available
+		int resultCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(this);
 
-            // In debug mode, log the status
-            //Log.d(ActivityUtils.APPTAG, getString(R.string.play_services_available));
+		// If Google Play services is available
+		if (ConnectionResult.SUCCESS == resultCode) {
 
-            // Continue
-            return true;
+			// In debug mode, log the status
+			// Log.d(ActivityUtils.APPTAG,
+			// getString(R.string.play_services_available));
 
-        // Google Play services was not available for some reason
-        } else {
+			// Continue
+			return true;
 
-            // Display an error dialog
-            GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0).show();
-            return false;
-        }
-    }
+			// Google Play services was not available for some reason
+		} else {
 
+			// Display an error dialog
+			GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0).show();
+			return false;
+		}
+	}
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		Button b = (Button) v;
 		switch (v.getId()) {
+
 		case R.id.buttonStart:
 			String toStart = (String) b.getText();
 			if (toStart.compareTo(START_TEXT) == 0) {
@@ -348,12 +353,12 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 						StepUpLifeService.class);
 				startIntent.putExtra("start_monitoring", true);
 				startService(startIntent);
-					
+
 				onStartUpdates(v);
-				
+
 				Log.d("A/Home", "starting service");
 				b.setText(STOP_TEXT);
-				
+
 			} else {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
 				Log.d("A/Home", "stopping service");
@@ -366,113 +371,110 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		}
 	}
 
-    /**
-     * Display the activity detection history stored in the
-     * log file
-     */
-    private void updateActivityHistory() {
-        // Try to load data from the history file
-        /*try {
-            // Load log file records into the List
-            List<Spanned> activityDetectionHistory =
-                    mLogFile.loadLogFile();
+	/**
+	 * Display the activity detection history stored in the log file
+	 */
+	private void updateActivityHistory() {
+		// Try to load data from the history file
+		/*
+		 * try { // Load log file records into the List List<Spanned>
+		 * activityDetectionHistory = mLogFile.loadLogFile();
+		 * 
+		 * // Clear the adapter of existing data mStatusAdapter.clear();
+		 * 
+		 * // Add each element of the history to the adapter for (Spanned
+		 * activity : activityDetectionHistory) { mStatusAdapter.add(activity);
+		 * }
+		 * 
+		 * // If the number of loaded records is greater than the max log size
+		 * if (mStatusAdapter.getCount() > MAX_LOG_SIZE) {
+		 * 
+		 * // Delete the old log file if (!mLogFile.removeLogFiles()) {
+		 * 
+		 * // Log an error if unable to delete the log file
+		 * Log.e(ActivityUtils.APPTAG,
+		 * getString(R.string.log_file_deletion_error)); } }
+		 * 
+		 * // Trigger the adapter to update the display
+		 * mStatusAdapter.notifyDataSetChanged();
+		 * 
+		 * // If an error occurs while reading the history file } catch
+		 * (IOException e) { Log.e(ActivityUtils.APPTAG, e.getMessage(), e); }
+		 */
+	}
 
-            // Clear the adapter of existing data
-            mStatusAdapter.clear();
+	/**
+	 * Respond to "Start" button by requesting activity recognition updates.
+	 * 
+	 * @param view
+	 *            The view that triggered this method.
+	 */
+	public void onStartUpdates(View view) {
 
-            // Add each element of the history to the adapter
-            for (Spanned activity : activityDetectionHistory) {
-                mStatusAdapter.add(activity);
-            }
+		// Check for Google Play services
+		if (!servicesConnected()) {
 
-            // If the number of loaded records is greater than the max log size
-            if (mStatusAdapter.getCount() > MAX_LOG_SIZE) {
+			return;
+		}
 
-                // Delete the old log file
-                if (!mLogFile.removeLogFiles()) {
+		/*
+		 * Set the request type. If a connection error occurs, and Google Play
+		 * services can handle it, then onActivityResult will use the request
+		 * type to retry the request
+		 */
+		mRequestType = ActivityUtils.REQUEST_TYPE.ADD;
 
-                    // Log an error if unable to delete the log file
-                    Log.e(ActivityUtils.APPTAG, getString(R.string.log_file_deletion_error));
-                }
-            }
+		// Pass the update request to the requester object
+		mDetectionRequester.requestUpdates();
+	}
 
-            // Trigger the adapter to update the display
-            mStatusAdapter.notifyDataSetChanged();
+	/**
+	 * Respond to "Stop" button by canceling updates.
+	 * 
+	 * @param view
+	 *            The view that triggered this method.
+	 */
+	public void onStopUpdates(View view) {
 
-        // If an error occurs while reading the history file
-        } catch (IOException e) {
-            Log.e(ActivityUtils.APPTAG, e.getMessage(), e);
-        }*/
-    }
-    
-    /**
-     * Respond to "Start" button by requesting activity recognition
-     * updates.
-     * @param view The view that triggered this method.
-     */
-    public void onStartUpdates(View view) {
+		// Check for Google Play services
+		if (!servicesConnected()) {
 
-        // Check for Google Play services
-        if (!servicesConnected()) {
+			return;
+		}
 
-            return;
-        }
+		/*
+		 * Set the request type. If a connection error occurs, and Google Play
+		 * services can handle it, then onActivityResult will use the request
+		 * type to retry the request
+		 */
+		mRequestType = ActivityUtils.REQUEST_TYPE.REMOVE;
 
-        /*
-         * Set the request type. If a connection error occurs, and Google Play services can
-         * handle it, then onActivityResult will use the request type to retry the request
-         */
-        mRequestType = ActivityUtils.REQUEST_TYPE.ADD;
+		// Pass the remove request to the remover object
+		mDetectionRemover.removeUpdates(mDetectionRequester
+				.getRequestPendingIntent());
 
-        // Pass the update request to the requester object
-        mDetectionRequester.requestUpdates();
-    }
+		/*
+		 * Cancel the PendingIntent. Even if the removal request fails,
+		 * canceling the PendingIntent will stop the updates.
+		 */
+		mDetectionRequester.getRequestPendingIntent().cancel();
+	}
 
-    /**
-     * Respond to "Stop" button by canceling updates.
-     * @param view The view that triggered this method.
-     */
-    public void onStopUpdates(View view) {
+	/**
+	 * Broadcast receiver that receives activity update intents It checks to see
+	 * if the ListView contains items. If it doesn't, it pulls in history. This
+	 * receiver is local only. It can't read broadcast Intents from other apps.
+	 */
+	BroadcastReceiver updateListReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
 
-        // Check for Google Play services
-        if (!servicesConnected()) {
-
-            return;
-        }
-
-        /*
-         * Set the request type. If a connection error occurs, and Google Play services can
-         * handle it, then onActivityResult will use the request type to retry the request
-         */
-        mRequestType = ActivityUtils.REQUEST_TYPE.REMOVE;
-
-        // Pass the remove request to the remover object
-        mDetectionRemover.removeUpdates(mDetectionRequester.getRequestPendingIntent());
-
-        /*
-         * Cancel the PendingIntent. Even if the removal request fails, canceling the PendingIntent
-         * will stop the updates.
-         */
-        mDetectionRequester.getRequestPendingIntent().cancel();
-    }
-
-	
-    /**
-     * Broadcast receiver that receives activity update intents
-     * It checks to see if the ListView contains items. If it
-     * doesn't, it pulls in history.
-     * This receiver is local only. It can't read broadcast Intents from other apps.
-     */
-    BroadcastReceiver updateListReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            /*
-             * When an Intent is received from the update listener IntentService, update
-             * the displayed log.
-             */
-            updateActivityHistory();
-        }
-    };
+			/*
+			 * When an Intent is received from the update listener
+			 * IntentService, update the displayed log.
+			 */
+			updateActivityHistory();
+		}
+	};
 
 }

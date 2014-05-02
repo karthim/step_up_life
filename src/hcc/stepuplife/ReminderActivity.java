@@ -96,28 +96,28 @@ public class ReminderActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		// Consider using startActivityWithResult() from service
 
-//		switch (v.getId()) {
-//		case R.id.btn_reminder_snooze:
-//			if (stepUpLifeService.isRunning())
-//				stepUpLifeService.snoozeActivity();
-//			else
-//				Log.d("INFO", "Tried to snooze, but activity not running !");
-//			break;
-//		case R.id.btn_reminder_cancel:
-//			if (stepUpLifeService.isRunning())
-//				stepUpLifeService.cancelRecommendedExercise();
-//			else
-//				Log.d("INFO", "Tried to snooze, but activity not running !");
-//			break;
-//		case R.id.btn_reminder_doit: // @TODO: What to do ?
-//			if (stepUpLifeService.isRunning())
-//				stepUpLifeService.snoozeActivity();
-//			else
-//				Log.d("INFO", "Tried to snooze, but activity not running !");
-//			break;
-//		default:
-//			break;
-//		}
+		switch (v.getId()) {
+		case R.id.btn_reminder_snooze:
+			if (stepUpLifeService.isRunning())
+				stepUpLifeService.snoozeActivity();
+			else
+				Log.d("INFO", "Tried to snooze, but activity not running !");
+			break;
+		case R.id.btn_reminder_cancel:
+			if (stepUpLifeService.isRunning())
+				stepUpLifeService.cancelRecommendedExercise();
+			else
+				Log.d("INFO", "Tried to snooze, but activity not running !");
+			break;
+		case R.id.btn_reminder_doit: // @TODO: What to do ?
+			if (stepUpLifeService.isRunning())
+				stepUpLifeService.snoozeActivity();
+			else
+				Log.d("INFO", "Tried to snooze, but activity not running !");
+			break;
+		default:
+			break;
+		}
 
 	}
 
