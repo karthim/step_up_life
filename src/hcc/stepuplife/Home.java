@@ -62,6 +62,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	private final String START_TEXT = "Start !";
 	private final String STOP_TEXT = "Stop !";
+	private final String LOGIN_TEXT = "Log in !";
 	private REQUEST_TYPE mRequestType;
 	
 	public static final String SNOOZE = "hcc.stepuplife.snooze";
@@ -125,21 +126,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		// b.setOnClickListener(this);
 
 		settings = getSharedPreferences(PREFS_NAME, 0);
-		Button b = ((Button) findViewById(R.id.buttonStart));
-		if (b == null)
-			Log.d("INFO", "Button start is null");
-		else
-			Log.d("INFO", "Button start is not null");
-		if (settings.getBoolean("serviceRunning", false)) {
-			// button should display start
-			Log.d("INFO", "Service running");
-			b.setText(STOP_TEXT);
-		} else {
-			// button should display stop
-			Log.d("INFO", "Service not running");
-			b.setText(START_TEXT);
-		}
-		b.setOnClickListener(this);
+
 		// CalendarEventManager.init(this);*/
 
 		// Activity Recognition
@@ -158,6 +145,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		registerReceiver(snoozereceiver, gotSnoozeIntentFiler);
 
 	}
+
+	
 
 	/*
 	 * Handle results returned to this Activity by other Activities started with
@@ -226,6 +215,30 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	protected void onResume() {
 		super.onResume();
 
+		Button b = ((Button) findViewById(R.id.buttonStart));
+		if (b == null)
+			Log.d("INFO", "Button start is null");
+		else
+			Log.d("INFO", "Button start is not null");
+		if (UserProfile.isUserProfileCreated(this)) {
+			Log.d("INFO", "User profile exists");
+			if (settings.getBoolean("serviceRunning", false)) {
+				// button should display start
+				Log.d("INFO", "Service running");
+				b.setText(STOP_TEXT);
+			} else {
+				// button should display stop
+				Log.d("INFO", "Service not running");
+				b.setText(START_TEXT);
+			}
+		} else {
+			UserProfile.init(this);
+			Log.d("INFO", "User profile not created");
+			b.setText(LOGIN_TEXT);
+		}
+
+		b.setOnClickListener(this);
+		
 		// Register the broadcast receiver
 		//mBroadcastManager.registerReceiver(snoozeActivity, mBroadcastFilter);
 
@@ -362,11 +375,15 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				Log.d("A/Home", "starting service");
 				b.setText(STOP_TEXT);
 
-			} else {
+			} else if (toStart.compareTo(STOP_TEXT) == 0) {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
 				Log.d("A/Home", "stopping service");
 				b.setText(START_TEXT);
 				onStopUpdates(v);
+			}
+			else if (toStart.compareTo(LOGIN_TEXT) == 0) {
+				Intent intent = new Intent(this, CreateProfileActivity.class);
+				startActivity(intent);
 			}
 			break;
 		default:
