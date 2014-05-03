@@ -31,6 +31,7 @@ public class StepUpLifeService extends Service {
 
 	public static final String PREFS_NAME = "stepuplifePrefs";
 	private SharedPreferences settings;
+	private ActivityStats mStats;
 	private SharedPreferences mPrefs;
 	private static final String LOGTAG = "S/StepUpLife";
 	static int activityCount = 0;
@@ -326,6 +327,10 @@ public class StepUpLifeService extends Service {
 		IntentFilter snoozeWakeupIntentFiler = new IntentFilter(
 				SNOOZE_WAKEUP_INTENT_STRING);
 		registerReceiver(meetingReceiver, snoozeWakeupIntentFiler);
+		
+		mStats = ActivityStats.loadActivityStats(this);
+		if(mStats == null)
+			mStats = new ActivityStats();
 
 		if (intent != null && intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
@@ -427,6 +432,7 @@ public class StepUpLifeService extends Service {
 		super.onDestroy();
 		settings.edit().putBoolean("serviceRunning", false).commit();
 		stopMonitoringActivity(true);
+		ActivityStats.saveActivityStats(this, mStats);
 		doCleanUp();
 	}
 
@@ -498,18 +504,11 @@ public class StepUpLifeService extends Service {
 		StepUpLifeUtils.showToast(this, "Right choice !!!");
 	}
 
-	public void startExercise() {
-		// TODO Auto-generated method stub
-	}
 
-	private void updateCancelCounter() {
-		// TODO Auto-generated method stub
-		cancelCounter++;
-	}
 
 	public void cancelRecommendedExercise() {
 		// TODO Auto-generated method stub
-		updateCancelCounter();
+		mStats.incrementCancelCount();
 		StepUpLifeUtils.showToast(this, "OK ! Later then...");
 		Log.d(LOGTAG, "Update cancel counter, starting activity monitoring");
 		startMonitoringActivity();
