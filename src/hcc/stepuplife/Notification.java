@@ -17,15 +17,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-public class ReminderActivity extends Activity implements OnClickListener {
+public class Notification extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_reminder);
+		setContentView(R.layout.activity_notification);
 
-		Intent startIntent = new Intent(ReminderActivity.this,
-				StepUpLifeService.class);
+		Intent startIntent = new Intent(Notification.this,StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
 
 		for (int buttonId : buttonIds) {
