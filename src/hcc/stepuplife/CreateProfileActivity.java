@@ -19,11 +19,13 @@ import android.widget.TextView;
 public class CreateProfileActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "CreateProfileActivity";
+	private boolean mUpdate;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_profile);
+		mUpdate = getIntent().getBooleanExtra("update", false);
 
 	}
 
@@ -36,6 +38,27 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 		else
 			Log.d("INFO", "Button Create is not null");
 
+		if (mUpdate) {
+			TextView nameText = ((TextView) findViewById(R.id.nameText));
+			TextView gmailText = ((TextView) findViewById(R.id.gmailText));
+			TextView ageText = ((TextView) findViewById(R.id.ageText));
+			RadioGroup radioGender = ((RadioGroup) findViewById(R.id.genderRadio));
+			b.setText("Update");
+			
+			try {
+				nameText.setText(UserProfile.getUserName());
+				ageText.setText(UserProfile.getAge());
+				gmailText.setText(UserProfile.getGmailID());
+				if (UserProfile.getGender() == UserProfile.Gender.MALE)
+					radioGender.check(R.id.male);
+				else
+					radioGender.check(R.id.female);
+
+			} catch (UserProfileNotFoundException e) {
+				Log.d(LOGTAG, "Did not find user profile");
+			}
+
+		}
 		b.setOnClickListener(this);
 
 	}
@@ -83,19 +106,67 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 		Button b = (Button) v;
 		switch (v.getId()) {
 		case R.id.buttonCreate:
-			String userName = ((TextView) findViewById(R.id.nameText)).getText().toString();
-			int age = Integer.parseInt(((TextView) findViewById(R.id.ageText)).getText().toString());
-			String gmailid = ((TextView) findViewById(R.id.gmailText)).getText().toString();
-			int checkedRadioButtonid = ((RadioGroup) findViewById(R.id.genderRadio)).getCheckedRadioButtonId();
+			String userName = ((TextView) findViewById(R.id.nameText))
+					.getText().toString();
+			if (userName == null || userName == "") {
+				StepUpLifeUtils.showToast(this, "Please enter name");
+				return;
+			}
+			Log.d(LOGTAG, "userName is " + userName);
+			int age;
+			try {
+				age = Integer.parseInt(((TextView) findViewById(R.id.ageText))
+						.getText().toString());
+				if (age < 18 && age > 90) {
+					StepUpLifeUtils.showToast(this, "Please enter valid age");
+					return;
+				}
+			} catch (NumberFormatException e) {
+				StepUpLifeUtils.showToast(this, "Please enter age");
+				return;
+			}
+			String gmailid = ((TextView) findViewById(R.id.gmailText))
+					.getText().toString();
+			if (gmailid == null || gmailid == "") {
+				StepUpLifeUtils.showToast(this, "Please enter gmail ID");
+				return;
+			}
+			int checkedRadioButtonid = ((RadioGroup) findViewById(R.id.genderRadio))
+					.getCheckedRadioButtonId();
 			Gender gender;
-			if(checkedRadioButtonid == R.id.male)
+			if (checkedRadioButtonid == R.id.male)
 				gender = Gender.MALE;
 			else
 				gender = Gender.FEMALE;
-			if(UserProfile.createProfile(userName, age, gmailid, gender))
-				Log.d(LOGTAG, "User Profile created");
-			else
-				Log.d(LOGTAG, "User Profile exists?");
+
+			if (mUpdate) {
+				try {
+					UserProfile.updateProfile(userName, age, gmailid, gender);
+					StepUpLifeUtils.showToast(this,
+							"Your profile was updated !!!");
+				} catch (UserProfileNotFoundException e) {
+					UserProfile.init(this);
+					if (UserProfile.isUserProfileCreated(this)) {
+						try {
+							UserProfile.updateProfile(userName, age, gmailid,
+									gender);
+							StepUpLifeUtils.showToast(this,
+									"Your profile was updated !!!");
+						} catch (Exception another) {
+							Log.d(LOGTAG, "Failed to update");
+							StepUpLifeUtils.showToast(this,
+									"Profile update failed !!!");
+						}
+					}
+				}
+			} else {
+				if (UserProfile.createProfile(userName, age, gmailid, gender)) {
+					Log.d(LOGTAG, "User Profile created");
+					StepUpLifeUtils
+							.showToast(this, "Your profile is saved !!!");
+				} else
+					Log.d(LOGTAG, "User Profile exists?");
+			}
 			finish();
 			break;
 		default:

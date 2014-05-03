@@ -94,7 +94,7 @@ public class UserProfile {
 	public static boolean createProfile(String name, int age, String gmailid,
 			Gender gender) {
 		if (isUserProfileCreated) {
-			Log.d(LOGTAG, "User profile exits, use getProfile");
+			Log.d(LOGTAG, "User profile exists, use getProfile");
 			return false;
 		}
 
@@ -111,6 +111,26 @@ public class UserProfile {
 		settings.edit().putString(USER_GMAIL_SETTING, gmailid).commit();
 
 		isUserProfileCreated = true;
+
+		return true;
+	}
+
+	public static boolean updateProfile(String name, int age, String gmailid,
+			Gender gender) throws UserProfileNotFoundException {
+		if (!isUserProfileCreated) {
+			Log.d(LOGTAG, "User profile does not exist, use getProfile");
+			return false;
+		}
+
+		if (name != null) {
+			setUserName(name);
+		}
+		if (age != -1)
+			setAge(age);
+		if (gmailid != null)
+			setGmailID(gmailid);
+		if (gender != null)
+			setGender(gender);
 
 		return true;
 	}

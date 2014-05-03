@@ -40,7 +40,8 @@ public class StepUpLifeService extends Service {
 	private int exerciseCount;
 	private int target = 10;
 
-	PendingIntent snoozeWakeupPendingIntent;
+	private PendingIntent snoozeWakeupPendingIntent;
+	private PendingIntent exerciseTimeoutPendingIntent;
 
 	private NotificationManager notificationManager;
 	private REQUEST_TYPE mRequestType;
@@ -57,6 +58,10 @@ public class StepUpLifeService extends Service {
 	private static final long MILLISECS_PER_MIN = 60 * 1000;
 	private static final long SNOOZE_MIN = 3;
 	private static final long SNOOZE_TIMEOUT = SNOOZE_MIN * MILLISECS_PER_MIN;
+	private static final String EXERCISE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.exercise_timeout";
+	private static final long EXERCISE_MIN = 3;
+	private static final long EXERCISE_TIMEOUT = EXERCISE_MIN
+			* MILLISECS_PER_MIN;
 
 	// A date formatter
 	private SimpleDateFormat mDateFormat;
@@ -101,8 +106,14 @@ public class StepUpLifeService extends Service {
 					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
 				StepUpLifeService.this.processAlarmCalendarEvent(false);
 			} else if (intent.getAction().equals(SNOOZE_WAKEUP_INTENT_STRING)) {
-				notifyUser();
+				notifyUserForExercise();
 				snoozeWakeupPendingIntent = null;
+			} else if (intent.getAction()
+					.equals(EXERCISE_TIMEOUT_INTENT_STRING)) {
+				// notifyUser();
+				Log.d(LOGTAG, "Exercise timeout");
+				exerciseTimeoutPendingIntent = null;
+				startMonitoringActivity();
 			} else if (intent.getAction().equals(ACTIVITY_GOT_INTENT_STRING)) {
 				Log.d(LOGTAG, "got activity intent");
 				if (serviceState == ServiceState.RUNNING_NOT_MONITORING) {
@@ -136,7 +147,7 @@ public class StepUpLifeService extends Service {
 						if (stillConfidence > 0.7f) {
 							stillactivityCount = activityCount = 0;
 							Log.d(LOGTAG, "Creating notification");
-							notifyUser();
+							notifyUserForExercise();
 						}
 					}
 
@@ -146,35 +157,35 @@ public class StepUpLifeService extends Service {
 
 	};
 
-	public void createNotification() {
-		// Prepare intent which is triggered if the
-		// notification is selected
-		Log.d(LOGTAG, "createNotification() entered");
-		Intent intent = new Intent(this, NotificationActivity.class);
-		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent,
-				Intent.FLAG_ACTIVITY_NEW_TASK);
-
-		// Build notification
-
-		Notification noti = new Notification.Builder(this)
-				.setContentTitle("Step Up Life")
-				.setContentText("Time for some exercise !!!")
-				.setSmallIcon(R.drawable.ic_launcher).setContentIntent(pIntent)
-				.build();
-		// .addAction(R.drawable.ic_launcher, "Call", pIntent)
-		// .addAction(R.drawable.ic_launcher, "More", pIntent)
-		// .addAction(R.drawable.ic_launcher, "And more", pIntent)
-
-		// hide the notification after its selected
-		noti.sound = RingtoneManager
-				.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		noti.flags |= Notification.FLAG_AUTO_CANCEL;
-		Log.d(LOGTAG,
-				"sent to notificationManager, exiting createNotification()");
-
-		notificationManager.notify(0, noti);
-
-	}
+	// public void createNotification() {
+	// // Prepare intent which is triggered if the
+	// // notification is selected
+	// Log.d(LOGTAG, "createNotification() entered");
+	// Intent intent = new Intent(this, NotificationActivity.class);
+	// PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent,
+	// Intent.FLAG_ACTIVITY_NEW_TASK);
+	//
+	// // Build notification
+	//
+	// Notification noti = new Notification.Builder(this)
+	// .setContentTitle("Step Up Life")
+	// .setContentText("Time for some exercise !!!")
+	// .setSmallIcon(R.drawable.ic_launcher).setContentIntent(pIntent)
+	// .build();
+	// // .addAction(R.drawable.ic_launcher, "Call", pIntent)
+	// // .addAction(R.drawable.ic_launcher, "More", pIntent)
+	// // .addAction(R.drawable.ic_launcher, "And more", pIntent)
+	//
+	// // hide the notification after its selected
+	// noti.sound = RingtoneManager
+	// .getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+	// noti.flags |= Notification.FLAG_AUTO_CANCEL;
+	// Log.d(LOGTAG,
+	// "sent to notificationManager, exiting createNotification()");
+	//
+	// notificationManager.notify(0, noti);
+	//
+	// }
 
 	/**
 	 * @param stopMonitoring
@@ -295,7 +306,8 @@ public class StepUpLifeService extends Service {
 		// Initing calendar manager and registering receiver for meeting event
 		// intents
 
-		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		// notificationManager = (NotificationManager)
+		// getSystemService(NOTIFICATION_SERVICE);
 		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 		CalendarEventManager.init(this);
@@ -326,9 +338,10 @@ public class StepUpLifeService extends Service {
 		return Service.START_STICKY;
 	}
 
-	private void notifyUser() {
+	private void notifyUserForExercise() {
 		stopMonitoringActivity(false);
-		createNotification();
+		StepUpLifeUtils.createNotification(this, "Step Up Life",
+				"Time for an exercise !!!");
 	}
 
 	private void saveSummary() {
@@ -440,7 +453,7 @@ public class StepUpLifeService extends Service {
 
 	public void stopMonitoringActivity(boolean endService) {
 		// TODO Auto-generated method stub
-		settings.edit().putBoolean("monitoring", false);
+		settings.edit().putBoolean("monitoring", false).commit();
 		serviceState = ServiceState.RUNNING_NOT_MONITORING;
 		if (endService) {
 			// save summary
@@ -449,6 +462,8 @@ public class StepUpLifeService extends Service {
 		}
 		if (snoozeWakeupPendingIntent != null)
 			alarmManager.cancel(snoozeWakeupPendingIntent);
+		if (exerciseTimeoutPendingIntent != null)
+			alarmManager.cancel(exerciseTimeoutPendingIntent);
 		Log.d(LOGTAG, "Stopped activity monitoring");
 	}
 
@@ -458,10 +473,12 @@ public class StepUpLifeService extends Service {
 		// Intent intent = new Intent(Home.SNOOZE);
 		// sendBroadcast(intent);
 		Intent snoozeIntent = new Intent(SNOOZE_WAKEUP_INTENT_STRING);
-		PendingIntent snoozeWakeupPendingIntent = PendingIntent.getBroadcast(
-				this, 0, snoozeIntent, 0);
+		snoozeWakeupPendingIntent = PendingIntent.getBroadcast(this, 0,
+				snoozeIntent, 0);
 		alarmManager.set(AlarmManager.ELAPSED_REALTIME, SNOOZE_TIMEOUT,
 				snoozeWakeupPendingIntent);
+		StepUpLifeUtils.showToast(this, "OK ! I will remind you again in "
+				+ SNOOZE_MIN + " minutes");
 	}
 
 	public void getExerciseRecco() {
@@ -470,6 +487,15 @@ public class StepUpLifeService extends Service {
 	}
 
 	public void doExercise() {
+		Intent exerciseTimeoutIntent = new Intent(
+				EXERCISE_TIMEOUT_INTENT_STRING);
+		exerciseTimeoutPendingIntent = PendingIntent.getBroadcast(this, 0,
+				exerciseTimeoutIntent, 0);
+		alarmManager.set(AlarmManager.ELAPSED_REALTIME, EXERCISE_TIMEOUT,
+				exerciseTimeoutPendingIntent);
+		Log.d(LOGTAG, "monitoring is off, will resume after " + EXERCISE_MIN
+				+ "minutes");
+		StepUpLifeUtils.showToast(this, "Right choice !!!");
 	}
 
 	public void startExercise() {
@@ -484,8 +510,10 @@ public class StepUpLifeService extends Service {
 	public void cancelRecommendedExercise() {
 		// TODO Auto-generated method stub
 		updateCancelCounter();
+		StepUpLifeUtils.showToast(this, "OK ! Later then...");
 		Log.d(LOGTAG, "Update cancel counter, starting activity monitoring");
 		startMonitoringActivity();
+		
 	}
 
 	public void doCleanUp() {
