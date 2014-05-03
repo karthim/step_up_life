@@ -111,7 +111,7 @@ public class StepUpLifeService extends Service {
 	public void createNotification() {
 		// Prepare intent which is triggered if the
 		// notification is selected
-		Intent intent = new Intent(this, Notification.class);
+		Intent intent = new Intent(this, ReminderActivity.class);
 		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent,
 				Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -254,8 +254,6 @@ public class StepUpLifeService extends Service {
 
 		IntentFilter gotActivityIntentFiler = new IntentFilter(
 				ACTIVITY_GOT_INTENT_STRING);
-		registerReceiver(meetingReceiver, gotActivityIntentFiler);
-
 		registerReceiver(meetingReceiver, gotActivityIntentFiler);
 
 		if (intent.getBooleanExtra("start_monitoring", false))

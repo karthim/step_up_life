@@ -63,6 +63,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private final String START_TEXT = "Start !";
 	private final String STOP_TEXT = "Stop !";
 	private REQUEST_TYPE mRequestType;
+	
 	public static final String SNOOZE = "hcc.stepuplife.snooze";
 	
 	/*
@@ -151,6 +152,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		// Get detection requester and remover objects
 		mDetectionRequester = new DetectionRequester(this);
 		mDetectionRemover = new DetectionRemover(this);
+		
+		IntentFilter gotSnoozeIntentFiler = new IntentFilter(
+				SNOOZE);
+		registerReceiver(snoozereceiver, gotSnoozeIntentFiler);
 
 	}
 
@@ -222,7 +227,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		super.onResume();
 
 		// Register the broadcast receiver
-		mBroadcastManager.registerReceiver(snoozeActivity, mBroadcastFilter);
+		//mBroadcastManager.registerReceiver(snoozeActivity, mBroadcastFilter);
 
 
 	}
@@ -423,26 +428,16 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		 * Cancel the PendingIntent. Even if the removal request fails,
 		 * canceling the PendingIntent will stop the updates.
 		 */
-		mDetectionRequester.getRequestPendingIntent().cancel();
+		 mDetectionRequester.getRequestPendingIntent().cancel();
 	}
 
-	/**
-	 * Broadcast receiver that receives activity update intents It checks to see
-	 * if the ListView contains items. If it doesn't, it pulls in history. This
-	 * receiver is local only. It can't read broadcast Intents from other apps.
-	 */
-	BroadcastReceiver snoozeActivity = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
+	private BroadcastReceiver snoozereceiver = new BroadcastReceiver() {
 
-			int i = 20 ;
+		@Override
+		public void onReceive(Context arg0, Intent arg1) {
 			Log.d("A/Home", "snoozeActivity");
-			/*
-			 * When an Intent is received from the update listener
-			 * IntentService, update the displayed log.
-			 */
-			
+			onStopUpdates(null);
 		}
 	};
-
 }
+
