@@ -27,6 +27,8 @@ public class StepUpLifeService extends Service {
 	private SharedPreferences settings;
 	private SharedPreferences mPrefs;
 	private static final String LOGTAG = "S/StepUpLife";
+	static int activityCount = 0;
+	static int stillactivityCount = 0;
 
 	private int exerciseCount;
 	private int target = 10;
@@ -66,14 +68,12 @@ public class StepUpLifeService extends Service {
 				StepUpLifeService.this.processAlarmCalendarEvent(false);
 			} else if (intent.getAction().equals(ACTIVITY_GOT_INTENT_STRING)) {
 				Log.d(LOGTAG, "got activity intent");
-				if (ActivityRecognitionResult.hasResult(intent)) {
+				if (ActivityRecognitionResult.hasResult(intent)) 
+				{
 
 					// Get the update
 					ActivityRecognitionResult result = ActivityRecognitionResult
 							.extractResult(intent);
-
-					// Log the update
-					logActivityRecognitionResult(result);
 
 					// Get the most probable activity from the list of
 					// activities in the update
@@ -86,36 +86,17 @@ public class StepUpLifeService extends Service {
 
 					// Get the type of activity
 					int activityType = mostProbableActivity.getType();
-
-					// Check to see if the repository contains a previous
-					// activity
-					if (!mPrefs
-							.contains(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE)) {
-
-						// This is the first type an activity has been detected.
-						// Store the type
-						Editor editor = mPrefs.edit();
-						editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE,
-								activityType);
-						editor.commit();
-
-						// If the repository contains a type
-					} else if (
-					// If the current type is "moving"
-					isMoving(activityType)
-
-					&&
-
-					// The activity has changed from the previous activity
-							activityChanged(activityType)
-
-							// The confidence level for the current activity is
-							// > 50%
-							&& (confidence >= 50)) {
-
-						// Notify the user
-						createNotification();
+					getNameFromType(activityType);
+					if(activityCount > 6)
+					{
+						float stillConfidence = stillactivityCount/activityCount;
+						if(stillConfidence > 0.7f)
+						{
+							stillactivityCount = activityCount = 0 ;
+							createNotification();
+						}
 					}
+
 				}
 			}
 		}
@@ -448,6 +429,7 @@ public class StepUpLifeService extends Service {
 	 * @return A user-readable name for the type
 	 */
 	private String getNameFromType(int activityType) {
+		activityCount++;
 		switch (activityType) {
 		case DetectedActivity.IN_VEHICLE:
 			return "in_vehicle";
@@ -456,6 +438,7 @@ public class StepUpLifeService extends Service {
 		case DetectedActivity.ON_FOOT:
 			return "on_foot";
 		case DetectedActivity.STILL:
+			stillactivityCount++;
 			return "still";
 		case DetectedActivity.UNKNOWN:
 			return "unknown";
