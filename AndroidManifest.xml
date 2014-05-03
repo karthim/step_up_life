@@ -38,7 +38,7 @@
             android:label="@string/title_activity_create_profile" >
         </activity>
         <activity
-            android:name="hcc.stepuplife.ReminderActivity"
+            android:name="hcc.stepuplife.Notification"
             android:label="@string/title_activity_reminder" >
         </activity>
 
