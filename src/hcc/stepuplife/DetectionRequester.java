@@ -144,7 +144,7 @@ public class DetectionRequester
     @Override
     public void onConnected(Bundle arg0) {
         // If debugging, log the connection
-        Log.d(ActivityUtils.APPTAG, mContext.getString(R.string.connected));
+        Log.d(ActivityUtils.APPTAG, "Connected to Google Play services");
 
         // Continue the process of requesting activity recognition updates
         continueRequestActivityUpdates();
@@ -156,7 +156,7 @@ public class DetectionRequester
     @Override
     public void onDisconnected() {
         // In debug mode, log the disconnection
-        Log.d(ActivityUtils.APPTAG, mContext.getString(R.string.disconnected));
+        Log.d(ActivityUtils.APPTAG, "Disconnected from Google Play services");
 
         // Destroy the current activity recognition client
         mActivityRecognitionClient = null;
@@ -175,6 +175,7 @@ public class DetectionRequester
         if (null != getRequestPendingIntent()) {
 
             // Return the existing intent
+        	
             return mActivityRecognitionPendingIntent;
 
         // If no PendingIntent exists
@@ -213,34 +214,38 @@ public class DetectionRequester
          * start a Google Play services activity that can resolve
          * error.
          */
-        if (connectionResult.hasResolution()) {
-
-            try {
-                connectionResult.startResolutionForResult((Activity) mContext,
-                    ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-
-            /*
-             * Thrown if Google Play services canceled the original
-             * PendingIntent
-             */
-            } catch (SendIntentException e) {
-               // display an error or log it here.
-            }
-
-        /*
-         * If no resolution is available, display Google
-         * Play service error dialog. This may direct the
-         * user to Google Play Store if Google Play services
-         * is out of date.
-         */
-        } else {
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-                            connectionResult.getErrorCode(),
-                            (Activity) mContext,
-                            ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            if (dialog != null) {
-                dialog.show();
-            }
-        }
+    	
+    	Log.d(ActivityUtils.APPTAG, "Connection to Google Play services failed");
+    	return;
+    	
+//        if (connectionResult.hasResolution()) {
+//
+//            try {
+//                connectionResult.startResolutionForResult((Activity) mContext,
+//                    ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+//
+//            /*
+//             * Thrown if Google Play services canceled the original
+//             * PendingIntent
+//             */
+//            } catch (SendIntentException e) {
+//               // display an error or log it here.
+//            }
+//
+//        /*
+//         * If no resolution is available, display Google
+//         * Play service error dialog. This may direct the
+//         * user to Google Play Store if Google Play services
+//         * is out of date.
+//         */
+//        } else {
+//            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+//                            connectionResult.getErrorCode(),
+//                            (Activity) mContext,
+//                            ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+//            if (dialog != null) {
+//                dialog.show();
+//            }
+//        }
     }
 }

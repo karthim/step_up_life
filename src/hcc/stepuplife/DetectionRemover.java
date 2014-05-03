@@ -197,34 +197,38 @@ public class DetectionRemover
          * start a Google Play services activity that can resolve
          * error.
          */
-        if (connectionResult.hasResolution()) {
 
-            try {
-                connectionResult.startResolutionForResult((Activity) mContext,
-                    ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-
-            /*
-             * Thrown if Google Play services canceled the original
-             * PendingIntent
-             */
-            } catch (SendIntentException e) {
-               // display an error or log it here.
-            }
-
-        /*
-         * If no resolution is available, display Google
-         * Play service error dialog. This may direct the
-         * user to Google Play Store if Google Play services
-         * is out of date.
-         */
-        } else {
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-                            connectionResult.getErrorCode(),
-                            (Activity) mContext,
-                            ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            if (dialog != null) {
-                dialog.show();
-            }
-        }
+    	Log.d(ActivityUtils.APPTAG, "Connection to Google Play services failed");
+    	return;
+    	//Need to fix this !!!
+//        if (connectionResult.hasResolution()) {
+//
+//            try {
+//                connectionResult.startResolutionForResult((Activity) mContext,
+//                    ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+//
+//            /*
+//             * Thrown if Google Play services canceled the original
+//             * PendingIntent
+//             */
+//            } catch (SendIntentException e) {
+//               // display an error or log it here.
+//            }
+//
+//        /*
+//         * If no resolution is available, display Google
+//         * Play service error dialog. This may direct the
+//         * user to Google Play Store if Google Play services
+//         * is out of date.
+//         */
+//        } else {
+//            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+//                            connectionResult.getErrorCode(),
+//                            (Activity) mContext,
+//                            ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+//            if (dialog != null) {
+//                dialog.show();
+//            }
+//        }
     }
 }

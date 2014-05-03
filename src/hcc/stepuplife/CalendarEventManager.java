@@ -81,6 +81,7 @@ public class CalendarEventManager {
 				Calendars.CALENDAR_DISPLAY_NAME, // 2
 				Calendars.OWNER_ACCOUNT // 3
 		};
+		
 
 		Cursor cur = null;
 		ContentResolver cr = appContext.getContentResolver();
@@ -111,6 +112,8 @@ public class CalendarEventManager {
 			Log.d(LOGTAG, "No calID for given gmail id found ");
 			return;
 		}
+		else
+			Log.d(LOGTAG, "Found calendar");
 
 		Long now = System.currentTimeMillis();
 		Long twelveHoursFromNow = now + 3600 * 12 * 1000;

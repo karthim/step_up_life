@@ -17,14 +17,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-public class ReminderActivity extends Activity implements OnClickListener {
+public class NotificationActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_reminder);
+		setContentView(R.layout.activity_notification);
 
-		Intent startIntent = new Intent(ReminderActivity.this,StepUpLifeService.class);
+		Intent startIntent = new Intent(NotificationActivity.this,StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
 
 		for (int buttonId : buttonIds) {
@@ -98,21 +98,24 @@ public class ReminderActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.btn_reminder_snooze:
 			if (stepUpLifeService.isRunning())
-				stepUpLifeService.snoozeActivity();
+				stepUpLifeService.snoozeExercise();
 			else
 				Log.d("INFO", "Tried to snooze, but activity not running !");
+			finish();
 			break;
 		case R.id.btn_reminder_cancel:
 			if (stepUpLifeService.isRunning())
 				stepUpLifeService.cancelRecommendedExercise();
 			else
 				Log.d("INFO", "Tried to snooze, but activity not running !");
+			finish();
 			break;
 		case R.id.btn_reminder_doit: // @TODO: What to do ?
 			if (stepUpLifeService.isRunning())
-				stepUpLifeService.snoozeActivity();
+				stepUpLifeService.doExercise();
 			else
 				Log.d("INFO", "Tried to snooze, but activity not running !");
+			finish();
 			break;
 		default:
 			break;

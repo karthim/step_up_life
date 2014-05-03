@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="hcc.stepuplife.Home"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,15 +31,15 @@
         </activity>
         <activity
             android:name="hcc.stepuplife.LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login" android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="hcc.stepuplife.CreateProfileActivity"
-            android:label="@string/title_activity_create_profile" >
+            android:label="@string/title_activity_create_profile" android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="hcc.stepuplife.ReminderActivity"
-            android:label="@string/title_activity_reminder" >
+            android:name="hcc.stepuplife.NotificationActivity"
+            android:label="@string/title_activity_reminder" android:screenOrientation="portrait">
         </activity>
 
         <service android:name=".StepUpLifeIntentService" >
