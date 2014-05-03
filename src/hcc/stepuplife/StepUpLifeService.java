@@ -29,6 +29,7 @@ public class StepUpLifeService extends Service {
 	private static final String LOGTAG = "S/StepUpLife";
 	static int activityCount = 0;
 	static int stillactivityCount = 0;
+	static int cancelCounter = 0;
 
 	private int exerciseCount;
 	private int target = 10;
@@ -106,7 +107,7 @@ public class StepUpLifeService extends Service {
 	public void createNotification() {
 		// Prepare intent which is triggered if the
 		// notification is selected
-		Intent intent = new Intent(this, ReminderActivity.class);
+		Intent intent = new Intent(this, Notification.class);
 		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent,
 				Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -304,9 +305,11 @@ public class StepUpLifeService extends Service {
 	public void snoozeActivity() {
 		// TODO Auto-generated method stub
 		serviceState = ServiceState.SNOOZE;
+		
 	}
 
 	public void getExerciseRecco() {
+		
 		// TODO Auto-generated method stub
 	}
 
@@ -316,6 +319,7 @@ public class StepUpLifeService extends Service {
 
 	private void updateCancelCounter() {
 		// TODO Auto-generated method stub
+		cancelCounter++ ;
 	}
 
 	public void cancelRecommendedExercise() {
@@ -328,97 +332,6 @@ public class StepUpLifeService extends Service {
 		Log.d(LOGTAG, "Unregistering broadcast receiver");
 		unregisterReceiver(meetingReceiver);
 		CalendarEventManager.release();
-	}
-
-	// *************Copied from the IntentService****************//
-	/**
-	 * Get a content Intent for the notification
-	 * 
-	 * @return A PendingIntent that starts the device's Location Settings panel.
-	 */
-	private PendingIntent getContentIntent() {
-
-		// Set the Intent action to open Location Settings
-		Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-
-		// Create a PendingIntent to start an Activity
-		return PendingIntent.getActivity(getApplicationContext(), 0, gpsIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-	}
-
-	/**
-	 * Tests to see if the activity has changed
-	 * 
-	 * @param currentType
-	 *            The current activity type
-	 * @return true if the user's current activity is different from the
-	 *         previous most probable activity; otherwise, false.
-	 */
-	private boolean activityChanged(int currentType) {
-
-		// Get the previous type, otherwise return the "unknown" type
-		int previousType = mPrefs.getInt(
-				ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE,
-				DetectedActivity.UNKNOWN);
-
-		// If the previous type isn't the same as the current type, the activity
-		// has changed
-		if (previousType != currentType) {
-			return true;
-
-			// Otherwise, it hasn't.
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Determine if an activity means that the user is moving.
-	 * 
-	 * @param type
-	 *            The type of activity the user is doing (see DetectedActivity
-	 *            constants)
-	 * @return true if the user seems to be moving from one location to another,
-	 *         otherwise false
-	 */
-	private boolean isMoving(int type) {
-		switch (type) {
-		// These types mean that the user is probably not moving
-		case DetectedActivity.STILL:
-		case DetectedActivity.TILTING:
-		case DetectedActivity.UNKNOWN:
-			return false;
-		default:
-			return true;
-		}
-	}
-
-	/**
-	 * Write the activity recognition update to the log file
-	 * 
-	 * @param result
-	 *            The result extracted from the incoming Intent
-	 */
-	private void logActivityRecognitionResult(ActivityRecognitionResult result) {
-		// Get all the probably activities from the updated result
-		for (DetectedActivity detectedActivity : result.getProbableActivities()) {
-
-			// Get the activity type, confidence level, and human-readable name
-			int activityType = detectedActivity.getType();
-			int confidence = detectedActivity.getConfidence();
-			String activityName = getNameFromType(activityType);
-
-			// Make a timestamp
-			String timeStamp = mDateFormat.format(new Date());
-
-			// Get the current log file or create a new one, then log the
-			// activity
-			/*
-			 * LogFile.getInstance(getApplicationContext()).log( timeStamp +
-			 * LOG_DELIMITER + getString(R.string.log_message, activityType,
-			 * activityName, confidence) );
-			 */
-		}
 	}
 
 	/**
