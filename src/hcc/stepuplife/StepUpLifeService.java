@@ -3,6 +3,7 @@ package hcc.stepuplife;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
@@ -20,6 +21,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.EditText;
 
 public class StepUpLifeService extends Service {
 
@@ -35,12 +37,13 @@ public class StepUpLifeService extends Service {
 	private int target = 10;
 	private NotificationManager notificationManager;
 	public static final String ACTIVITY_GOT_INTENT_STRING = "hcc.stepuplife.gotactivity";
+	
 	// Formats the timestamp in the log
 	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSZ";
 
 	// Delimits the timestamp from the log info
 	private static final String LOG_DELIMITER = ";;";
-
+ 
 	// A date formatter
 	private SimpleDateFormat mDateFormat;
 
@@ -88,9 +91,10 @@ public class StepUpLifeService extends Service {
 					// Get the type of activity
 					int activityType = mostProbableActivity.getType();
 					getNameFromType(activityType);
-					if(activityCount > 6)
+					if(activityCount > 2)
 					{
-						float stillConfidence = stillactivityCount/activityCount;
+						float stillConfidence = 1.0f;
+						stillConfidence = (stillactivityCount * (1.0f))/ (activityCount * 1.0f);
 						if(stillConfidence > 0.7f)
 						{
 							stillactivityCount = activityCount = 0 ;
@@ -252,6 +256,8 @@ public class StepUpLifeService extends Service {
 				ACTIVITY_GOT_INTENT_STRING);
 		registerReceiver(meetingReceiver, gotActivityIntentFiler);
 
+		registerReceiver(meetingReceiver, gotActivityIntentFiler);
+
 		if (intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
 
@@ -305,7 +311,8 @@ public class StepUpLifeService extends Service {
 	public void snoozeActivity() {
 		// TODO Auto-generated method stub
 		serviceState = ServiceState.SNOOZE;
-		
+		Intent intent = new Intent(Home.SNOOZE);
+		sendBroadcast(intent);
 	}
 
 	public void getExerciseRecco() {
@@ -360,5 +367,4 @@ public class StepUpLifeService extends Service {
 		}
 		return "unknown";
 	}
-
 }

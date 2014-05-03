@@ -63,6 +63,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private final String START_TEXT = "Start !";
 	private final String STOP_TEXT = "Stop !";
 	private REQUEST_TYPE mRequestType;
+	public static final String SNOOZE = "hcc.stepuplife.snooze";
+	
 	/*
 	 * Holds activity recognition data, in the form of strings that can contain
 	 * markup
@@ -144,9 +146,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
 		// Create a new Intent filter for the broadcast receiver
-		mBroadcastFilter = new IntentFilter(
-				ActivityUtils.ACTION_REFRESH_STATUS_LIST);
-		mBroadcastFilter.addCategory(ActivityUtils.CATEGORY_LOCATION_SERVICES);
+		mBroadcastFilter = new IntentFilter(Home.SNOOZE);
 
 		// Get detection requester and remover objects
 		mDetectionRequester = new DetectionRequester(this);
@@ -222,11 +222,9 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		super.onResume();
 
 		// Register the broadcast receiver
-		mBroadcastManager
-				.registerReceiver(updateListReceiver, mBroadcastFilter);
+		mBroadcastManager.registerReceiver(snoozeActivity, mBroadcastFilter);
 
-		// Load updated activity history
-		updateActivityHistory();
+
 	}
 
 	@Override
@@ -372,38 +370,6 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	}
 
 	/**
-	 * Display the activity detection history stored in the log file
-	 */
-	private void updateActivityHistory() {
-		// Try to load data from the history file
-		/*
-		 * try { // Load log file records into the List List<Spanned>
-		 * activityDetectionHistory = mLogFile.loadLogFile();
-		 * 
-		 * // Clear the adapter of existing data mStatusAdapter.clear();
-		 * 
-		 * // Add each element of the history to the adapter for (Spanned
-		 * activity : activityDetectionHistory) { mStatusAdapter.add(activity);
-		 * }
-		 * 
-		 * // If the number of loaded records is greater than the max log size
-		 * if (mStatusAdapter.getCount() > MAX_LOG_SIZE) {
-		 * 
-		 * // Delete the old log file if (!mLogFile.removeLogFiles()) {
-		 * 
-		 * // Log an error if unable to delete the log file
-		 * Log.e(ActivityUtils.APPTAG,
-		 * getString(R.string.log_file_deletion_error)); } }
-		 * 
-		 * // Trigger the adapter to update the display
-		 * mStatusAdapter.notifyDataSetChanged();
-		 * 
-		 * // If an error occurs while reading the history file } catch
-		 * (IOException e) { Log.e(ActivityUtils.APPTAG, e.getMessage(), e); }
-		 */
-	}
-
-	/**
 	 * Respond to "Start" button by requesting activity recognition updates.
 	 * 
 	 * @param view
@@ -465,15 +431,17 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	 * if the ListView contains items. If it doesn't, it pulls in history. This
 	 * receiver is local only. It can't read broadcast Intents from other apps.
 	 */
-	BroadcastReceiver updateListReceiver = new BroadcastReceiver() {
+	BroadcastReceiver snoozeActivity = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 
+			int i = 20 ;
+			Log.d("A/Home", "snoozeActivity");
 			/*
 			 * When an Intent is received from the update listener
 			 * IntentService, update the displayed log.
 			 */
-			updateActivityHistory();
+			
 		}
 	};
 
