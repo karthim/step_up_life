@@ -125,6 +125,7 @@ public class StepUpLifeService extends Service {
 	public void createNotification() {
 		// Prepare intent which is triggered if the
 		// notification is selected
+		Log.d(LOGTAG, "createNotification() entered");
 		Intent intent = new Intent(this, ReminderActivity.class);
 		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent,
 				Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -142,6 +143,7 @@ public class StepUpLifeService extends Service {
 
 		// hide the notification after its selected
 		noti.flags |= Notification.FLAG_AUTO_CANCEL;
+		Log.d(LOGTAG, "sent to notificationManager, exiting createNotification()");
 
 		notificationManager.notify(0, noti);
 
@@ -274,6 +276,9 @@ public class StepUpLifeService extends Service {
 			startMonitoringActivity();
 
 		Log.d(LOGTAG, "Service onStartCommand ends");
+		
+		createNotification();
+		
 		return Service.START_STICKY;
 	}
 

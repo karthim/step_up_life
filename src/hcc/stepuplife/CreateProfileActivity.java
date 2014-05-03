@@ -1,27 +1,43 @@
 package hcc.stepuplife;
 
+import hcc.stepuplife.UserProfile.Gender;
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
-public class CreateProfileActivity extends Activity {
+public class CreateProfileActivity extends Activity implements OnClickListener {
+
+	private static final String LOGTAG = "CreateProfileActivity";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_profile);
 
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+	}
+
+	protected void onResume() {
+		super.onResume();
+
+		Button b = ((Button) findViewById(R.id.buttonCreate));
+		if (b == null)
+			Log.d("INFO", "Button Create is null");
+		else
+			Log.d("INFO", "Button Create is not null");
+
+		b.setOnClickListener(this);
+
 	}
 
 	@Override
@@ -61,4 +77,29 @@ public class CreateProfileActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		Button b = (Button) v;
+		switch (v.getId()) {
+		case R.id.buttonCreate:
+			String userName = ((TextView) findViewById(R.id.nameText)).getText().toString();
+			int age = Integer.parseInt(((TextView) findViewById(R.id.ageText)).getText().toString());
+			String gmailid = ((TextView) findViewById(R.id.gmailText)).getText().toString();
+			int checkedRadioButtonid = ((RadioGroup) findViewById(R.id.genderRadio)).getCheckedRadioButtonId();
+			Gender gender;
+			if(checkedRadioButtonid == R.id.male)
+				gender = Gender.MALE;
+			else
+				gender = Gender.FEMALE;
+			if(UserProfile.createProfile(userName, age, gmailid, gender))
+				Log.d(LOGTAG, "User Profile created");
+			else
+				Log.d(LOGTAG, "User Profile exists?");
+			finish();
+			break;
+		default:
+			break;
+		}
+	}
 }

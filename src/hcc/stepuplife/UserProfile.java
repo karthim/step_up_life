@@ -7,7 +7,6 @@ import android.util.Log;
 public class UserProfile {
 
 	private static final String LOGTAG = "UserProfile";
-	
 
 	private static final String PREFS_NAME = "stepuplifePrefs";
 	private static final String USER_NAME_SETTING = "userName";
@@ -55,7 +54,8 @@ public class UserProfile {
 				: Gender.FEMALE;
 	}
 
-	public static void setUserName(String userName) throws UserProfileNotFoundException {
+	public static void setUserName(String userName)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
 			throw new UserProfileNotFoundException();
@@ -71,7 +71,8 @@ public class UserProfile {
 		settings.edit().putInt(USER_AGE_SETTING, age).commit();
 	}
 
-	public static void setGmailID(String gmailId) throws UserProfileNotFoundException {
+	public static void setGmailID(String gmailId)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
 			throw new UserProfileNotFoundException();
@@ -79,13 +80,15 @@ public class UserProfile {
 		settings.edit().putString(USER_GMAIL_SETTING, gmailId).commit();
 	}
 
-	public static void setGender(Gender gender) throws UserProfileNotFoundException {
+	public static void setGender(Gender gender)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
 			throw new UserProfileNotFoundException();
 		}
-		settings.edit().putBoolean(USER_GENDER_SETTING,
-				(gender == Gender.MALE ? true : false)).commit();
+		settings.edit()
+				.putBoolean(USER_GENDER_SETTING,
+						(gender == Gender.MALE ? true : false)).commit();
 	}
 
 	public static boolean createProfile(String name, int age, String gmailid,
@@ -102,10 +105,11 @@ public class UserProfile {
 
 		settings.edit().putString(USER_NAME_SETTING, name).commit();
 		settings.edit().putInt(USER_AGE_SETTING, age).commit();
-		settings.edit().putBoolean(USER_GENDER_SETTING,
-				(gender == Gender.MALE ? true : false)).commit();
+		settings.edit()
+				.putBoolean(USER_GENDER_SETTING,
+						(gender == Gender.MALE ? true : false)).commit();
 		settings.edit().putString(USER_GMAIL_SETTING, gmailid).commit();
-		
+
 		isUserProfileCreated = true;
 
 		return true;
@@ -113,6 +117,16 @@ public class UserProfile {
 
 	public static void init(Context context) {
 		settings = context.getSharedPreferences(PREFS_NAME, 0);
+		if (settings.contains(USER_NAME_SETTING))
+			isUserProfileCreated = true;
+		else
+			isUserProfileCreated = false;
+
+	}
+
+	public static boolean isUserProfileCreated(Context context) {
+		return context.getSharedPreferences(PREFS_NAME, 0).contains(
+				USER_NAME_SETTING);
 	}
 
 }

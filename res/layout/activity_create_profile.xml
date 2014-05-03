@@ -17,13 +17,13 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/textViewMessage"
+            android:id="@+id/GendertTextMsg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Profile" />
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/nameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Name" >
@@ -32,26 +32,26 @@
         </EditText>
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/ageText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Age"
             android:inputType="numberSigned" />
 
         <TextView
-            android:id="@+id/textViewMessage"
+            android:id="@+id/GendertTextMsg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:text="Gender" />
 
         <RadioGroup
-            android:id="@+id/radioGroup1"
+            android:id="@+id/genderRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
             <RadioButton
-                android:id="@+id/radio0"
+                android:id="@+id/male"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -59,14 +59,14 @@
                 android:text="Male" />
 
             <RadioButton
-                android:id="@+id/radio1"
+                android:id="@+id/female"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Female" />
         </RadioGroup>
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/gmailText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="gmail id"
