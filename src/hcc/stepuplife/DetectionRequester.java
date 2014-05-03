@@ -180,7 +180,7 @@ public class DetectionRequester
         // If no PendingIntent exists
         } else {
             // Create an Intent pointing to the IntentService
-            Intent intent = new Intent(mContext, hcc.stepuplife.StepUpLifeIntentService.class);
+            Intent intent = new Intent(StepUpLifeService.ACTIVITY_GOT_INTENT_STRING);
 
             /*
              * Return a PendingIntent to start the IntentService.
@@ -189,8 +189,10 @@ public class DetectionRequester
              * again updates the original. Otherwise, Location Services
              * can't match the PendingIntent to requests made with it.
              */
-            PendingIntent pendingIntent = PendingIntent.getService(mContext, 0, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+          
+            
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0,
+            		intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             setRequestPendingIntent(pendingIntent);
             return pendingIntent;

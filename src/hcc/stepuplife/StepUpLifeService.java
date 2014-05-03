@@ -1,5 +1,11 @@
 package hcc.stepuplife;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.DetectedActivity;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,19 +15,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Binder;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 
 public class StepUpLifeService extends Service {
 
 	public static final String PREFS_NAME = "stepuplifePrefs";
 	private SharedPreferences settings;
+	private SharedPreferences mPrefs;
 	private static final String LOGTAG = "S/StepUpLife";
 
 	private int exerciseCount;
 	private int target = 10;
 	private NotificationManager notificationManager;
+	public static final String ACTIVITY_GOT_INTENT_STRING = "hcc.stepuplife.gotactivity";
+	// Formats the timestamp in the log
+	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSZ";
+
+	// Delimits the timestamp from the log info
+	private static final String LOG_DELIMITER = ";;";
+
+	// A date formatter
+	private SimpleDateFormat mDateFormat;
 
 	/**
 	 * @return - integer denoting percent of goal reached
@@ -46,8 +64,60 @@ public class StepUpLifeService extends Service {
 			} else if (intent.getAction().equals(
 					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
 				StepUpLifeService.this.processAlarmCalendarEvent(false);
-			}
+			} else if (intent.getAction().equals(ACTIVITY_GOT_INTENT_STRING)) {
+				Log.d(LOGTAG, "got activity intent");
+				if (ActivityRecognitionResult.hasResult(intent)) {
 
+					// Get the update
+					ActivityRecognitionResult result = ActivityRecognitionResult
+							.extractResult(intent);
+
+					// Log the update
+					logActivityRecognitionResult(result);
+
+					// Get the most probable activity from the list of
+					// activities in the update
+					DetectedActivity mostProbableActivity = result
+							.getMostProbableActivity();
+
+					// Get the confidence percentage for the most probable
+					// activity
+					int confidence = mostProbableActivity.getConfidence();
+
+					// Get the type of activity
+					int activityType = mostProbableActivity.getType();
+
+					// Check to see if the repository contains a previous
+					// activity
+					if (!mPrefs
+							.contains(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE)) {
+
+						// This is the first type an activity has been detected.
+						// Store the type
+						Editor editor = mPrefs.edit();
+						editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE,
+								activityType);
+						editor.commit();
+
+						// If the repository contains a type
+					} else if (
+					// If the current type is "moving"
+					isMoving(activityType)
+
+					&&
+
+					// The activity has changed from the previous activity
+							activityChanged(activityType)
+
+							// The confidence level for the current activity is
+							// > 50%
+							&& (confidence >= 50)) {
+
+						// Notify the user
+						createNotification();
+					}
+				}
+			}
 		}
 
 	};
@@ -164,6 +234,8 @@ public class StepUpLifeService extends Service {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		settings = getSharedPreferences(PREFS_NAME, 0);
+		mPrefs = getApplicationContext().getSharedPreferences(
+				ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 		serviceState = ServiceState.STOPPED;
 		Log.d(LOGTAG, "Service created");
 	}
@@ -193,6 +265,10 @@ public class StepUpLifeService extends Service {
 		IntentFilter stopMeetingIntentFiler = new IntentFilter(
 				CalendarEventManager.ALARM_INTENT_STOP_ACTION);
 		registerReceiver(meetingReceiver, stopMeetingIntentFiler);
+
+		IntentFilter gotActivityIntentFiler = new IntentFilter(
+				ACTIVITY_GOT_INTENT_STRING);
+		registerReceiver(meetingReceiver, gotActivityIntentFiler);
 
 		if (intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
@@ -271,6 +347,122 @@ public class StepUpLifeService extends Service {
 		Log.d(LOGTAG, "Unregistering broadcast receiver");
 		unregisterReceiver(meetingReceiver);
 		CalendarEventManager.release();
+	}
+
+	// *************Copied from the IntentService****************//
+	/**
+	 * Get a content Intent for the notification
+	 * 
+	 * @return A PendingIntent that starts the device's Location Settings panel.
+	 */
+	private PendingIntent getContentIntent() {
+
+		// Set the Intent action to open Location Settings
+		Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+
+		// Create a PendingIntent to start an Activity
+		return PendingIntent.getActivity(getApplicationContext(), 0, gpsIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+	}
+
+	/**
+	 * Tests to see if the activity has changed
+	 * 
+	 * @param currentType
+	 *            The current activity type
+	 * @return true if the user's current activity is different from the
+	 *         previous most probable activity; otherwise, false.
+	 */
+	private boolean activityChanged(int currentType) {
+
+		// Get the previous type, otherwise return the "unknown" type
+		int previousType = mPrefs.getInt(
+				ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE,
+				DetectedActivity.UNKNOWN);
+
+		// If the previous type isn't the same as the current type, the activity
+		// has changed
+		if (previousType != currentType) {
+			return true;
+
+			// Otherwise, it hasn't.
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Determine if an activity means that the user is moving.
+	 * 
+	 * @param type
+	 *            The type of activity the user is doing (see DetectedActivity
+	 *            constants)
+	 * @return true if the user seems to be moving from one location to another,
+	 *         otherwise false
+	 */
+	private boolean isMoving(int type) {
+		switch (type) {
+		// These types mean that the user is probably not moving
+		case DetectedActivity.STILL:
+		case DetectedActivity.TILTING:
+		case DetectedActivity.UNKNOWN:
+			return false;
+		default:
+			return true;
+		}
+	}
+
+	/**
+	 * Write the activity recognition update to the log file
+	 * 
+	 * @param result
+	 *            The result extracted from the incoming Intent
+	 */
+	private void logActivityRecognitionResult(ActivityRecognitionResult result) {
+		// Get all the probably activities from the updated result
+		for (DetectedActivity detectedActivity : result.getProbableActivities()) {
+
+			// Get the activity type, confidence level, and human-readable name
+			int activityType = detectedActivity.getType();
+			int confidence = detectedActivity.getConfidence();
+			String activityName = getNameFromType(activityType);
+
+			// Make a timestamp
+			String timeStamp = mDateFormat.format(new Date());
+
+			// Get the current log file or create a new one, then log the
+			// activity
+			/*
+			 * LogFile.getInstance(getApplicationContext()).log( timeStamp +
+			 * LOG_DELIMITER + getString(R.string.log_message, activityType,
+			 * activityName, confidence) );
+			 */
+		}
+	}
+
+	/**
+	 * Map detected activity types to strings
+	 * 
+	 * @param activityType
+	 *            The detected activity type
+	 * @return A user-readable name for the type
+	 */
+	private String getNameFromType(int activityType) {
+		switch (activityType) {
+		case DetectedActivity.IN_VEHICLE:
+			return "in_vehicle";
+		case DetectedActivity.ON_BICYCLE:
+			return "on_bicycle";
+		case DetectedActivity.ON_FOOT:
+			return "on_foot";
+		case DetectedActivity.STILL:
+			return "still";
+		case DetectedActivity.UNKNOWN:
+			return "unknown";
+		case DetectedActivity.TILTING:
+			return "tilting";
+		}
+		return "unknown";
 	}
 
 }
