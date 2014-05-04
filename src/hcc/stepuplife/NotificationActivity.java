@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class NotificationActivity extends Activity implements OnClickListener {
 
@@ -24,9 +25,10 @@ public class NotificationActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState); 
 		setContentView(R.layout.activity_notification);
-
+		LinearLayout layout =(LinearLayout)findViewById(R.id.notificationllayout);
+		layout.setBackgroundResource(R.drawable.commonbgd);
 		Intent startIntent = new Intent(NotificationActivity.this,
 				StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
