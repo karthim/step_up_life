@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +47,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 	public static final String SNOOZE = "hcc.stepuplife.snooze";
 	private static final CharSequence CREATE_PROFILE_MSG = "Ready to create your profile ?";
+	private static final int EVENING_THRESHOLD_PM = 18;
+	private static final int NOON_PM = 12;
 
 	private void updateTextView(boolean profileNotCreated) {
 
@@ -58,11 +61,11 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		rightNow.setTimeZone(TimeZone.getDefault());
 		int hourOfday = rightNow.get(Calendar.HOUR_OF_DAY);
 
-		if (hourOfday < 12) {
+		if (hourOfday < NOON_PM) {
 			greetText.setText(GOOD_MORNING_MSG);
-		} else if (hourOfday >= 12 && hourOfday <= 6) {
+		} else if (hourOfday >= NOON_PM && hourOfday <= EVENING_THRESHOLD_PM) {
 			greetText.setText(GOOD_AFTERNOON_MSG);
-		} else if (hourOfday >= 6) {
+		} else if (hourOfday >= EVENING_THRESHOLD_PM) {
 			greetText.setText(GOOD_EVENING_MSG);
 		}
 
@@ -101,6 +104,14 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		}
 
 	};
+
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)
+				|| keyCode == KeyEvent.KEYCODE_HOME) {
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

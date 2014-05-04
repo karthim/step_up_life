@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 public class StepUpLifeUtils {
 	private static final String LOGTAG = "hcc.stepuplife.utils";
-	
 
-	public static void createNotification(Context context, String title, String text) {
+	public static void createNotification(Context context, String title,
+			String text) {
 		// Prepare intent which is triggered if the
 		// notification is selected
 		Log.d(LOGTAG, "createNotification() entered");
@@ -24,22 +24,25 @@ public class StepUpLifeUtils {
 		// Build notification
 
 		Notification noti = new Notification.Builder(context)
-				.setContentTitle(title)
-				.setContentText(text)
-				.setSmallIcon(R.drawable.ic_launcher).setContentIntent(pIntent)
+				.setContentTitle(title).setContentText(text)
+				.setSmallIcon(R.drawable.smalllogo).setContentIntent(pIntent)
 				.build();
 
 		// hide the notification after its selected
 		noti.sound = RingtoneManager
 				.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		noti.flags |= Notification.FLAG_AUTO_CANCEL;
+		noti.defaults |= Notification.DEFAULT_VIBRATE;
+
 		Log.d(LOGTAG,
 				"sent to notificationManager, exiting createNotification()");
-		((NotificationManager)context.getSystemService(context.NOTIFICATION_SERVICE)).notify(0, noti);
+		((NotificationManager) context
+				.getSystemService(context.NOTIFICATION_SERVICE))
+				.notify(0, noti);
 
 	}
-	
-	public static void showToast(Context context, String text){
+
+	public static void showToast(Context context, String text) {
 		Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
 		toast.show();
 	}
