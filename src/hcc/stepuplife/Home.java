@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -109,6 +111,9 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		setContentView(R.layout.activity_home);
 		LinearLayout layout =(LinearLayout)findViewById(R.id.LinearLayout1);
 		layout.setBackgroundResource(R.drawable.nice_cloud);
+		
+		getWindow().setFormat(PixelFormat.RGBA_8888);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
 
 		// Set up the action bar to show a dropdown list.
 		/*
