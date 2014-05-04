@@ -430,7 +430,6 @@ public class StepUpLifeService extends Service {
 		super.onDestroy();
 		settings.edit().putBoolean("serviceRunning", false).commit();
 		stopMonitoringActivity(true);
-		UserStats.saveActivityStats(this, mStats);
 		doCleanUp();
 	}
 
@@ -460,9 +459,8 @@ public class StepUpLifeService extends Service {
 		settings.edit().putBoolean("monitoring", false).commit();
 		serviceState = ServiceState.RUNNING_NOT_MONITORING;
 		if (endService) {
-			// save summary
-			saveSummary();
-			// @TODO: and launch Summary screen
+			UserStats.saveActivityStats(this, mStats);
+			//launch summary screen
 		}
 		if (snoozeWakeupPendingIntent != null)
 			alarmManager.cancel(snoozeWakeupPendingIntent);
