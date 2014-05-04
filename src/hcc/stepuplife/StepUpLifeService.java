@@ -3,6 +3,7 @@ package hcc.stepuplife;
 import hcc.stepuplife.ActivityUtils.REQUEST_TYPE;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -89,14 +90,15 @@ public class StepUpLifeService extends Service {
 		return percentGoalReached < 100 ? percentGoalReached : 100;
 	}
 
-	private BroadcastReceiver meetingReceiver = new BroadcastReceiver() {
-		private final String LOGTAG = "B/meetingReceiver";
+	private BroadcastReceiver stepUpLifeReceiver = new BroadcastReceiver() {
+		private final String LOGTAG = "B/stepUpLifeReceiver";
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			boolean stopMonitoring = false;
-			Log.d(LOGTAG, "Received intent with action " + intent.getAction());
+			// Log.d(LOGTAG, "Received intent with action " +
+			// intent.getAction());
 			if (intent.getAction().equals(
 					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
 				stopMonitoring = true;
@@ -110,14 +112,14 @@ public class StepUpLifeService extends Service {
 			} else if (intent.getAction()
 					.equals(EXERCISE_TIMEOUT_INTENT_STRING)) {
 				// notifyUser();
-				Log.d(LOGTAG, "Exercise timeout");
+				Log.i(LOGTAG, "Exercise timeout");
 				exerciseTimeoutPendingIntent = null;
 				startMonitoringActivity();
 			} else if (intent.getAction().equals(ACTIVITY_GOT_INTENT_STRING)) {
-				Log.d(LOGTAG, "got activity intent");
+//				Log.i(LOGTAG, "got activity intent");
 				if (serviceState == ServiceState.RUNNING_NOT_MONITORING) {
-					Log.d(LOGTAG,
-							"not processing activity intent as monitoring is disabled");
+//					Log.i(LOGTAG,
+//							"not processing activity intent as monitoring is disabled");
 					return;
 				}
 
@@ -240,11 +242,9 @@ public class StepUpLifeService extends Service {
 		case STARTED:
 		case RUNNING_MONITORING:
 		case RUNNING_NOT_MONITORING:
-		case SUSPENDED:
-			return true;
 		case SNOOZE:
+			return true;
 		case STOPPED:
-			return false;
 		default:
 			return false;
 		}
@@ -312,19 +312,19 @@ public class StepUpLifeService extends Service {
 		CalendarEventManager.init(this);
 		IntentFilter startMeetingIntentFiler = new IntentFilter(
 				CalendarEventManager.ALARM_INTENT_START_ACTION);
-		registerReceiver(meetingReceiver, startMeetingIntentFiler);
+		registerReceiver(stepUpLifeReceiver, startMeetingIntentFiler);
 
 		IntentFilter stopMeetingIntentFiler = new IntentFilter(
 				CalendarEventManager.ALARM_INTENT_STOP_ACTION);
-		registerReceiver(meetingReceiver, stopMeetingIntentFiler);
+		registerReceiver(stepUpLifeReceiver, stopMeetingIntentFiler);
 
 		IntentFilter gotActivityIntentFiler = new IntentFilter(
 				ACTIVITY_GOT_INTENT_STRING);
-		registerReceiver(meetingReceiver, gotActivityIntentFiler);
+		registerReceiver(stepUpLifeReceiver, gotActivityIntentFiler);
 
 		IntentFilter snoozeWakeupIntentFiler = new IntentFilter(
 				SNOOZE_WAKEUP_INTENT_STRING);
-		registerReceiver(meetingReceiver, snoozeWakeupIntentFiler);
+		registerReceiver(stepUpLifeReceiver, snoozeWakeupIntentFiler);
 
 		mStats = UserStats.loadActivityStats(this);
 		if (mStats == null)
@@ -460,7 +460,7 @@ public class StepUpLifeService extends Service {
 		serviceState = ServiceState.RUNNING_NOT_MONITORING;
 		if (endService) {
 			UserStats.saveActivityStats(this, mStats);
-			//launch summary screen
+			// launch summary screen
 		}
 		if (snoozeWakeupPendingIntent != null)
 			alarmManager.cancel(snoozeWakeupPendingIntent);
@@ -474,10 +474,12 @@ public class StepUpLifeService extends Service {
 		// serviceState = ServiceState.SNOOZE;
 		// Intent intent = new Intent(Home.SNOOZE);
 		// sendBroadcast(intent);
+		Calendar calendar = Calendar.getInstance();
+		long timeToWakeup = calendar.getTimeInMillis() + SNOOZE_TIMEOUT;
 		Intent snoozeIntent = new Intent(SNOOZE_WAKEUP_INTENT_STRING);
 		snoozeWakeupPendingIntent = PendingIntent.getBroadcast(this, 0,
 				snoozeIntent, 0);
-		alarmManager.set(AlarmManager.ELAPSED_REALTIME, SNOOZE_TIMEOUT,
+		alarmManager.set(AlarmManager.RTC_WAKEUP, timeToWakeup,
 				snoozeWakeupPendingIntent);
 		StepUpLifeUtils.showToast(this, "OK ! I will remind you again in "
 				+ SNOOZE_MIN + " minutes");
@@ -490,12 +492,14 @@ public class StepUpLifeService extends Service {
 	public void doExercise() {
 		Intent exerciseTimeoutIntent = new Intent(
 				EXERCISE_TIMEOUT_INTENT_STRING);
+		Calendar calendar = Calendar.getInstance();
+		long timeToWakeup = calendar.getTimeInMillis() + EXERCISE_TIMEOUT;
 		exerciseTimeoutPendingIntent = PendingIntent.getBroadcast(this, 0,
 				exerciseTimeoutIntent, 0);
-		alarmManager.set(AlarmManager.ELAPSED_REALTIME, EXERCISE_TIMEOUT,
+		alarmManager.set(AlarmManager.RTC_WAKEUP, timeToWakeup,
 				exerciseTimeoutPendingIntent);
 		Log.d(LOGTAG, "monitoring is off, will resume after " + EXERCISE_MIN
-				+ "minutes");
+				+ " minutes");
 		StepUpLifeUtils.showToast(this, "Right choice !!!");
 	}
 
@@ -510,7 +514,7 @@ public class StepUpLifeService extends Service {
 
 	public void doCleanUp() {
 		Log.d(LOGTAG, "Unregistering broadcast receiver");
-		unregisterReceiver(meetingReceiver);
+		unregisterReceiver(stepUpLifeReceiver);
 		CalendarEventManager.release();
 	}
 

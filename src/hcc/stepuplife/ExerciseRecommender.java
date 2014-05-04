@@ -15,6 +15,6 @@ public class ExerciseRecommender {
 			randomNumberGen = new Random();
 			init = true;
 		}
-		return exerciseImageids[randomNumberGen.nextInt() % 5];
+		return exerciseImageids[Math.abs(randomNumberGen.nextInt()) % 5];
 	}
 }

@@ -20,6 +20,8 @@ import android.widget.ImageView;
 
 public class NotificationActivity extends Activity implements OnClickListener {
 
+	private static final String LOGTAG = "hcc.stepuplife.notificationactivity";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,8 +42,6 @@ public class NotificationActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		ImageView v = (ImageView) findViewById(R.id.imageView1);
-		v.setImageResource(stepUpLifeService.getExerciseImageId());
 	}
 
 	int buttonIds[] = { R.id.btn_reminder_cancel, R.id.btn_reminder_snooze,
@@ -54,6 +54,17 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			stepUpLifeService = ((StepUpLifeService.StepUpLifeServiceBinder) service)
 					.getService();
+			ImageView v = (ImageView) findViewById(R.id.imageView1);
+			if (v == null) {
+				Log.d(LOGTAG, "Imageview is null");
+			} else {
+				if (stepUpLifeService == null) {
+					Log.d(LOGTAG,
+							"stepUpLifeService is null inside mConnection !");
+					// Dunno whats going on here, temporary fix
+				} else
+					v.setImageResource(stepUpLifeService.getExerciseImageId());
+			}
 		}
 
 		@Override
@@ -115,17 +126,17 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			finish();
 			break;
 		case R.id.btn_reminder_cancel:
-			if (stepUpLifeService.isRunning())
+			if (stepUpLifeService != null)
 				stepUpLifeService.cancelRecommendedExercise();
 			else
-				Log.d("INFO", "Tried to snooze, but activity not running !");
+				Log.d("INFO", "stepUpLifeService is null, cannot snooze !");
 			finish();
 			break;
 		case R.id.btn_reminder_doit: // @TODO: What to do ?
-			if (stepUpLifeService.isRunning())
+			if (stepUpLifeService != null)
 				stepUpLifeService.doExercise();
 			else
-				Log.d("INFO", "Tried to snooze, but activity not running !");
+				Log.d("INFO", "stepUpLifeService is null, cannot snooze !");
 			finish();
 			break;
 		default:
