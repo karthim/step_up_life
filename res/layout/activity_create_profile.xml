@@ -1,86 +1,81 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLytUserProfile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="hcc.stepuplife.CreateProfileActivity" >
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/GendertTextMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Profile" />
+
+    <EditText
+        android:id="@+id/nameText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:hint="Name" >
 
-        <TextView
-            android:id="@+id/GendertTextMsg"
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/ageText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Age"
+        android:inputType="numberSigned" />
+
+    <TextView
+        android:id="@+id/GendertTextMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="Gender" />
+
+    <RadioGroup
+        android:id="@+id/genderRadio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+            android:id="@+id/male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Profile" />
+            android:layout_marginTop="5dp"
+            android:checked="true"
+            android:text="Male" />
 
-        <EditText
-            android:id="@+id/nameText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Name" >
-
-            <requestFocus />
-        </EditText>
-
-        <EditText
-            android:id="@+id/ageText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Age"
-            android:inputType="numberSigned" />
-
-        <TextView
-            android:id="@+id/GendertTextMsg"
+        <RadioButton
+            android:id="@+id/female"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="Gender" />
+            android:text="Female" />
+    </RadioGroup>
 
-        <RadioGroup
-            android:id="@+id/genderRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+    <EditText
+        android:id="@+id/gmailText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="gmail id"
+        android:text="@string/gmailID" >
+    </EditText>
 
-            <RadioButton
-                android:id="@+id/male"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:checked="true"
-                android:text="Male" />
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="Create" />
 
-            <RadioButton
-                android:id="@+id/female"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Female" />
-        </RadioGroup>
-
-        <EditText
-            android:id="@+id/gmailText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="gmail id"
-            android:text="@string/gmailID" >
-
-        </EditText>
-
-        <Button
-            android:id="@+id/buttonCreate"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="Create" />
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

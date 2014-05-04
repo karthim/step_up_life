@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class Home extends Activity implements ActionBar.OnNavigationListener,
@@ -106,6 +107,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		LinearLayout layout =(LinearLayout)findViewById(R.id.LinearLayout1);
+		layout.setBackgroundResource(R.drawable.nice_cloud);
 
 		// Set up the action bar to show a dropdown list.
 		/*
@@ -127,7 +130,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		// b.setOnClickListener(this);
 
 		settings = getSharedPreferences(PREFS_NAME, 0);
-
+		
 		// CalendarEventManager.init(this);*/
 
 		// Activity Recognition

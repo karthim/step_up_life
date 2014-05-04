@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -25,6 +26,10 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_profile);
+		
+		LinearLayout layout =(LinearLayout)findViewById(R.id.LinearLytUserProfile);
+		layout.setBackgroundResource(R.drawable.commonbgd);
+		
 		mUpdate = getIntent().getBooleanExtra("update", false);
 
 	}
