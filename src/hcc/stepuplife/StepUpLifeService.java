@@ -5,7 +5,6 @@ import hcc.stepuplife.ActivityUtils.REQUEST_TYPE;
 import java.text.SimpleDateFormat;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -14,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.media.RingtoneManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -31,7 +29,7 @@ public class StepUpLifeService extends Service {
 
 	public static final String PREFS_NAME = "stepuplifePrefs";
 	private SharedPreferences settings;
-	private ActivityStats mStats;
+	private UserStats mStats;
 	private SharedPreferences mPrefs;
 	private static final String LOGTAG = "S/StepUpLife";
 	static int activityCount = 0;
@@ -327,10 +325,10 @@ public class StepUpLifeService extends Service {
 		IntentFilter snoozeWakeupIntentFiler = new IntentFilter(
 				SNOOZE_WAKEUP_INTENT_STRING);
 		registerReceiver(meetingReceiver, snoozeWakeupIntentFiler);
-		
-		mStats = ActivityStats.loadActivityStats(this);
-		if(mStats == null)
-			mStats = new ActivityStats();
+
+		mStats = UserStats.loadActivityStats(this);
+		if (mStats == null)
+			mStats = new UserStats();
 
 		if (intent != null && intent.getBooleanExtra("start_monitoring", false))
 			startMonitoringActivity();
@@ -432,7 +430,7 @@ public class StepUpLifeService extends Service {
 		super.onDestroy();
 		settings.edit().putBoolean("serviceRunning", false).commit();
 		stopMonitoringActivity(true);
-		ActivityStats.saveActivityStats(this, mStats);
+		UserStats.saveActivityStats(this, mStats);
 		doCleanUp();
 	}
 
@@ -487,9 +485,8 @@ public class StepUpLifeService extends Service {
 				+ SNOOZE_MIN + " minutes");
 	}
 
-	public void getExerciseRecco() {
-
-		// TODO Auto-generated method stub
+	public int getExerciseImageId() {
+		return ExerciseRecommender.getRandomExerciseId();
 	}
 
 	public void doExercise() {
@@ -504,15 +501,13 @@ public class StepUpLifeService extends Service {
 		StepUpLifeUtils.showToast(this, "Right choice !!!");
 	}
 
-
-
 	public void cancelRecommendedExercise() {
 		// TODO Auto-generated method stub
 		mStats.incrementCancelCount();
 		StepUpLifeUtils.showToast(this, "OK ! Later then...");
 		Log.d(LOGTAG, "Update cancel counter, starting activity monitoring");
 		startMonitoringActivity();
-		
+
 	}
 
 	public void doCleanUp() {

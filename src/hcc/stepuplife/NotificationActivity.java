@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class NotificationActivity extends Activity implements OnClickListener {
 
@@ -24,13 +25,23 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_notification);
 
-		Intent startIntent = new Intent(NotificationActivity.this,StepUpLifeService.class);
+		Intent startIntent = new Intent(NotificationActivity.this,
+				StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
 
 		for (int buttonId : buttonIds) {
 			Button b = ((Button) findViewById(buttonId));
 			b.setOnClickListener(this);
 		}
+
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		ImageView v = (ImageView) findViewById(R.id.imageView1);
+		v.setImageResource(stepUpLifeService.getExerciseImageId());
 	}
 
 	int buttonIds[] = { R.id.btn_reminder_cancel, R.id.btn_reminder_snooze,
