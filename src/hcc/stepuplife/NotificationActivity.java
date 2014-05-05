@@ -25,9 +25,9 @@ public class NotificationActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState); 
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_notification);
-		LinearLayout layout =(LinearLayout)findViewById(R.id.notificationllayout);
+		LinearLayout layout = (LinearLayout) findViewById(R.id.notificationllayout);
 		layout.setBackgroundResource(R.drawable.commonbgd);
 		Intent startIntent = new Intent(NotificationActivity.this,
 				StepUpLifeService.class);
@@ -50,6 +50,8 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			R.id.btn_reminder_doit };
 
 	private StepUpLifeService stepUpLifeService;
+
+	protected int mExerciseImageId = R.drawable.exercise1;
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override
@@ -64,8 +66,11 @@ public class NotificationActivity extends Activity implements OnClickListener {
 					Log.d(LOGTAG,
 							"stepUpLifeService is null inside mConnection !");
 					// Dunno whats going on here, temporary fix
-				} else
-					v.setImageResource(stepUpLifeService.getExerciseImageId());
+				} else {
+					int imageId = stepUpLifeService.getExerciseImageId();
+					NotificationActivity.this.mExerciseImageId = imageId;
+					v.setImageResource(imageId);
+				}
 			}
 		}
 
@@ -135,9 +140,9 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			finish();
 			break;
 		case R.id.btn_reminder_doit: // @TODO: What to do ?
-			if (stepUpLifeService != null)
-				stepUpLifeService.doExercise();
-			else
+			if (stepUpLifeService != null) {
+				stepUpLifeService.doExercise(mExerciseImageId);
+			} else
 				Log.d("INFO", "stepUpLifeService is null, cannot snooze !");
 			finish();
 			break;

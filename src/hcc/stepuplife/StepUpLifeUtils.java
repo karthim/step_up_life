@@ -36,15 +36,57 @@ public class StepUpLifeUtils {
 
 		Log.d(LOGTAG,
 				"sent to notificationManager, exiting createNotification()");
-		((NotificationManager) context
-				.getSystemService(context.NOTIFICATION_SERVICE))
-				.notify(0, noti);
+
+		NotificationManager notificationManager = ((NotificationManager) context
+				.getSystemService(context.NOTIFICATION_SERVICE));
+
+		notificationManager.cancelAll();
+		notificationManager.notify(0, noti);
 
 	}
 
 	public static void showToast(Context context, String text) {
 		Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
 		toast.show();
+	}
+
+	public static void cancelAllNotifications(Context context) {
+		NotificationManager notificationManager = ((NotificationManager) context
+				.getSystemService(context.NOTIFICATION_SERVICE));
+
+		notificationManager.cancelAll();
+	}
+
+	public static void createSummaryNotification(Context context) {
+		// TODO Auto-generated method stub
+		Log.d(LOGTAG, "createSummaryNotification() entered");
+		Intent intent = new Intent(context, SummaryActivity.class);
+		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent,
+				Intent.FLAG_ACTIVITY_NEW_TASK);
+
+		// Build notification
+		
+		
+		Notification noti = new Notification.Builder(context)
+				.setContentTitle("Step Up Life").setContentText("You have reached your goal !!!")
+				.setSmallIcon(R.drawable.smalllogo).setContentIntent(pIntent)
+				.build();
+
+		// hide the notification after its selected
+		noti.sound = RingtoneManager
+				.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+		noti.flags |= Notification.FLAG_AUTO_CANCEL;
+		noti.defaults |= Notification.DEFAULT_VIBRATE;
+
+		Log.d(LOGTAG,
+				"sent to notificationManager, exiting createNotification()");
+
+		NotificationManager notificationManager = ((NotificationManager) context
+				.getSystemService(context.NOTIFICATION_SERVICE));
+
+		notificationManager.cancelAll();
+		notificationManager.notify(0, noti);
+		
 	}
 
 }

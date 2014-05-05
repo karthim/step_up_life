@@ -17,25 +17,27 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class SummaryActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "hcc.stepuplife.notificationactivity";
+	private static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
 	private UserStats mStats;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_notification);
+		setContentView(R.layout.activity_summary);
 
-//		Intent startIntent = new Intent(SummaryActivity.this,
-//				StepUpLifeService.class);
-//		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
+		// Intent startIntent = new Intent(SummaryActivity.this,
+		// StepUpLifeService.class);
+		// bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
 
-//		for (int buttonId : buttonIds) {
-//			Button b = ((Button) findViewById(buttonId));
-//			b.setOnClickListener(this);
-//		}
-		
+		// for (int buttonId : buttonIds) {
+		// Button b = ((Button) findViewById(buttonId));
+		// b.setOnClickListener(this);
+		// }
 
 	}
 
@@ -44,35 +46,52 @@ public class SummaryActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onResume();
 		mStats = UserStats.loadActivityStats(this);
-		if(mStats == null){
+		if (mStats == null) {
 			mStats = new UserStats();
 		}
+		TextView t;
+
+		t = (TextView) findViewById(R.id.calories);
+		t.setText(String.valueOf(mStats.getCaloriesBurnt()));
+
+		t = (TextView) findViewById(R.id.cancel);
+		t.setText(String.valueOf(mStats.getCancelCount()));
+
+		t = (TextView) findViewById(R.id.pushups);
+		t.setText(String.valueOf(mStats.getPushupsCount()));
+
+		t = (TextView) findViewById(R.id.lunges);
+		t.setText(String.valueOf(mStats.getlungesCount()));
+		
+		Button b =(Button)findViewById(R.id.buttonClose);
+		b.setOnClickListener(this);
+
 	}
 
-	int buttonIds[] = { };
+	int buttonIds[] = { R.id.buttonClose };
 
-//	private StepUpLifeService stepUpLifeService;
-//	private ServiceConnection mConnection = new ServiceConnection() {
-//
-//		@Override
-//		public void onServiceConnected(ComponentName name, IBinder service) {
-//			stepUpLifeService = ((StepUpLifeService.StepUpLifeServiceBinder) service)
-//					.getService();
-//			updateViews();
-//		}
-//
-//		private void updateViews() {
-//			//Take all summary values from service and update views.
-//			
-//		}
-//
-//		@Override
-//		public void onServiceDisconnected(ComponentName name) {
-//			stepUpLifeService = null;
-//			
-//		}
-//
-//	};
+	// private StepUpLifeService stepUpLifeService;
+	// private ServiceConnection mConnection = new ServiceConnection() {
+	//
+	// @Override
+	// public void onServiceConnected(ComponentName name, IBinder service) {
+	// stepUpLifeService = ((StepUpLifeService.StepUpLifeServiceBinder) service)
+	// .getService();
+	// updateViews();
+	// }
+	//
+	// private void updateViews() {
+	// //Take all summary values from service and update views.
+	//
+	// }
+	//
+	// @Override
+	// public void onServiceDisconnected(ComponentName name) {
+	// stepUpLifeService = null;
+	//
+	// }
+	//
+	// };
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,16 +137,16 @@ public class SummaryActivity extends Activity implements OnClickListener {
 		// Consider using startActivityWithResult() from service
 
 		switch (v.getId()) {
-		case R.id.btn_reminder_snooze:
-			break;
-		case R.id.btn_reminder_cancel:
-			break;
-		case R.id.btn_reminder_doit: // @TODO: What to do ?
+		case R.id.buttonClose:
+			stopService(new Intent(SummaryActivity.this, StepUpLifeService.class));
+			Log.d("A/Home", "stopping service");
+			Intent intent = new Intent(STOP_HOME_ACTIVITY_INTENT);
+			sendBroadcast(intent);
+			finish();
 			break;
 		default:
 			break;
 		}
-		finish();
 
 	}
 
@@ -135,6 +154,6 @@ public class SummaryActivity extends Activity implements OnClickListener {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-//		unbindService(mConnection);
+		// unbindService(mConnection);
 	}
 }

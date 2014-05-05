@@ -68,7 +68,10 @@ public class StepUpLifeService extends Service {
 	private static final long IDLE_TIMEOUT_MILLISECS = IDLE_TIMEOUT_MIN
 			* MILLISECS_PER_MIN;
 	private static final String IDLE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.idle_timeout";
-
+	private static final String CALENDAR_EVENT_ON = "isCalendarEventOn";
+	private static final long AFTER_MEETING_END_GAP_MIN = 5;
+	private static final int ACTIVITY_NON_STILL_THRESHOLD_SECS = 5;
+	private boolean mIdleTimeOut = false;
 	// A date formatter
 	private SimpleDateFormat mDateFormat;
 
@@ -113,7 +116,10 @@ public class StepUpLifeService extends Service {
 				StepUpLifeService.this.processAlarmCalendarEvent(false);
 			} else if (intent.getAction().equals(SNOOZE_WAKEUP_INTENT_STRING)) {
 				Log.i(LOGTAG, "Snooze timeout");
-				notifyUserForExercise();
+				if (!mCalendarEventOn)
+					notifyUserForExercise();
+				else
+					StepUpLifeService.this.mIdleTimeOut = true;
 			} else if (intent.getAction()
 					.equals(EXERCISE_TIMEOUT_INTENT_STRING)) {
 				// notifyUser();
@@ -122,7 +128,10 @@ public class StepUpLifeService extends Service {
 				startMonitoringActivity();
 			} else if (intent.getAction().equals(IDLE_TIMEOUT_INTENT_STRING)) {
 				Log.i(LOGTAG, "Idle timeout");
-				notifyUserForExercise();
+				if (!mCalendarEventOn)
+					notifyUserForExercise();
+				else
+					StepUpLifeService.this.mIdleTimeOut = true;
 			} else if (intent.getAction().equals(ACTIVITY_GOT_INTENT_STRING)) {
 				if (activityIntentCount < 5) {
 					Log.i(LOGTAG, "got activity intent");
@@ -208,6 +217,7 @@ public class StepUpLifeService extends Service {
 
 	private PendingIntent idleTimerPendingIntent;
 	private long mIdleTimerStartTime;
+	private boolean mCalendarEventOn = false;
 
 	private long getElapsedIdleTimeinMillisecs() {
 		if (mIdleTimerStartTime == 0) {
@@ -226,11 +236,12 @@ public class StepUpLifeService extends Service {
 		return getElapsedIdleTimeinMillisecs() / MILLISECS_PER_MIN;
 	}
 
-	private void startTimer(String intentString) {
+	private void startTimer(String intentString, long duration) {
 
 		if (intentString.equals(IDLE_TIMEOUT_INTENT_STRING)) {
 			long timeSinceLastIntent = getElapsedIdleTimeinMillisecs();
-			if (timeSinceLastIntent != -1 && timeSinceLastIntent < 30 * 1000) {
+			if (timeSinceLastIntent != -1
+					&& timeSinceLastIntent < ACTIVITY_NON_STILL_THRESHOLD_SECS * 1000) {
 				Log.d(LOGTAG,
 						"No need to restart idle timerintent as timeSinceLastIntent < 30 secs");
 				return;
@@ -238,8 +249,15 @@ public class StepUpLifeService extends Service {
 			if (idleTimerPendingIntent != null)
 				stopTimer(IDLE_TIMEOUT_INTENT_STRING);
 			Calendar calendar = Calendar.getInstance();
-			long timeToWakeup = calendar.getTimeInMillis()
-					+ IDLE_TIMEOUT_MILLISECS;
+
+			long timeToWakeup;
+
+			if (duration != 0) {
+				timeToWakeup = calendar.getTimeInMillis() + duration;
+			} else
+				timeToWakeup = calendar.getTimeInMillis()
+						+ IDLE_TIMEOUT_MILLISECS;
+
 			Intent idleTimerIntent = new Intent(IDLE_TIMEOUT_INTENT_STRING);
 			idleTimerPendingIntent = PendingIntent.getBroadcast(this, 0,
 					idleTimerIntent, 0);
@@ -252,8 +270,14 @@ public class StepUpLifeService extends Service {
 			if (snoozeWakeupPendingIntent != null)
 				stopTimer(IDLE_TIMEOUT_INTENT_STRING);
 			Calendar calendar = Calendar.getInstance();
-			long timeToWakeup = calendar.getTimeInMillis()
-					+ SNOOZE_TIMEOUT_MILLISECS;
+
+			long timeToWakeup;
+			if (duration != 0) {
+				timeToWakeup = calendar.getTimeInMillis() + duration;
+			} else
+				timeToWakeup = calendar.getTimeInMillis()
+						+ IDLE_TIMEOUT_MILLISECS;
+
 			Intent idleTimerIntent = new Intent(SNOOZE_WAKEUP_INTENT_STRING);
 			snoozeWakeupPendingIntent = PendingIntent.getBroadcast(this, 0,
 					idleTimerIntent, 0);
@@ -264,8 +288,14 @@ public class StepUpLifeService extends Service {
 			if (exerciseTimeoutPendingIntent != null)
 				stopTimer(EXERCISE_TIMEOUT_INTENT_STRING);
 			Calendar calendar = Calendar.getInstance();
-			long timeToWakeup = calendar.getTimeInMillis()
-					+ EXERCISE_TIMEOUT_MILLISECS;
+
+			long timeToWakeup;
+			if (duration != 0) {
+				timeToWakeup = calendar.getTimeInMillis() + duration;
+			} else
+				timeToWakeup = calendar.getTimeInMillis()
+						+ IDLE_TIMEOUT_MILLISECS;
+
 			Intent idleTimerIntent = new Intent(EXERCISE_TIMEOUT_INTENT_STRING);
 			exerciseTimeoutPendingIntent = PendingIntent.getBroadcast(this, 0,
 					idleTimerIntent, 0);
@@ -317,8 +347,14 @@ public class StepUpLifeService extends Service {
 		if (stopMonitoring) {
 			Log.d(LOGTAG, "Stopping activity monitoring");
 			stopMonitoringActivity(false);
+			mCalendarEventOn = true;
 		} else {
 			Log.d(LOGTAG, "Starting activity monitoring");
+			mCalendarEventOn = false;
+			if (mIdleTimeOut) {
+				startTimer(IDLE_TIMEOUT_INTENT_STRING,
+						AFTER_MEETING_END_GAP_MIN * MILLISECS_PER_MIN);
+			}
 			startMonitoringActivity();
 		}
 		CalendarEventManager.notifyEventReceived();
@@ -448,6 +484,7 @@ public class StepUpLifeService extends Service {
 		}
 
 		mStats = UserStats.loadActivityStats(this);
+		mCalendarEventOn = settings.getBoolean(CALENDAR_EVENT_ON, false);
 		if (mStats == null)
 			mStats = new UserStats();
 
@@ -463,6 +500,7 @@ public class StepUpLifeService extends Service {
 	}
 
 	private void notifyUserForExercise() {
+		mIdleTimeOut = false;
 		stopMonitoringActivity(false);
 		StepUpLifeUtils.createNotification(this, "Step Up Life",
 				"Time for an exercise !!!");
@@ -550,7 +588,10 @@ public class StepUpLifeService extends Service {
 		Log.d(LOGTAG, "Destroying service");
 		super.onDestroy();
 		settings.edit().putBoolean("serviceRunning", false).commit();
+		settings.edit().putBoolean(CALENDAR_EVENT_ON, mCalendarEventOn)
+				.commit();
 		stopMonitoringActivity(true);
+		StepUpLifeUtils.cancelAllNotifications(this);
 		doCleanUp();
 	}
 
@@ -572,8 +613,13 @@ public class StepUpLifeService extends Service {
 		settings.edit().putBoolean("monitoring", true);
 		serviceState = ServiceState.RUNNING_MONITORING;
 		Log.d(LOGTAG, "Started activity monitoring");
-		startTimer(IDLE_TIMEOUT_INTENT_STRING);
+		startTimer(IDLE_TIMEOUT_INTENT_STRING, 5000L);
 
+	}
+
+	private void startTimer(String idleTimeoutIntentString) {
+		// TODO Auto-generated method stub
+		startTimer(idleTimeoutIntentString, 0);
 	}
 
 	private void stopTimer(String intentString) {
@@ -623,10 +669,20 @@ public class StepUpLifeService extends Service {
 		return ExerciseRecommender.getRandomExerciseId();
 	}
 
-	public void doExercise() {
-		startTimer(EXERCISE_TIMEOUT_INTENT_STRING);
-		Log.d(LOGTAG, "monitoring is off, will resume after "
-				+ EXERCISE_TIMEOUT_MIN + " minutes");
+	public void doExercise(int id) {
+		if (UserStats.ExerciseType.getExerciseTypeFromImageId(id) == UserStats.ExerciseType.LUNGES)
+			mStats.incrementLungesCount();
+		if (UserStats.ExerciseType.getExerciseTypeFromImageId(id) == UserStats.ExerciseType.PUSHUPS)
+			mStats.incrementPushupsCount();
+
+		if (mStats.isGoalReached()) {
+			StepUpLifeUtils.createSummaryNotification(this);
+			return;
+		}
+		startMonitoringActivity();
+		// startTimer(EXERCISE_TIMEOUT_INTENT_STRING);
+		// Log.d(LOGTAG, "monitoring is off, will resume after "
+		// + EXERCISE_TIMEOUT_MIN + " minutes");
 		StepUpLifeUtils.showToast(this, "Right choice !!!");
 	}
 

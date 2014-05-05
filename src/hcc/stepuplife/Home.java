@@ -8,10 +8,14 @@ import java.util.TimeZone;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -52,6 +56,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private static final CharSequence CREATE_PROFILE_MSG = "Ready to create your profile ?";
 	private static final int EVENING_THRESHOLD_PM = 18;
 	private static final int NOON_PM = 12;
+
+	public static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
 
 	private void updateTextView(boolean profileNotCreated) {
 
@@ -108,6 +114,16 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 	};
 
+	private BroadcastReceiver homeReceiver = new BroadcastReceiver() {
+		private final String LOGTAG = "B/stepUpLifeReceiver";
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(STOP_HOME_ACTIVITY_INTENT))
+				finish();
+		}
+	};
+
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)
 				|| keyCode == KeyEvent.KEYCODE_HOME) {
@@ -120,117 +136,24 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-		LinearLayout layout =(LinearLayout)findViewById(R.id.LinearLayout1);
+		LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLayout1);
 		layout.setBackgroundResource(R.drawable.nice_cloud);
-		
+
 		getWindow().setFormat(PixelFormat.RGBA_8888);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
 
-		// Set up the action bar to show a dropdown list.
-		/*
-		 * final ActionBar actionBar = getActionBar();
-		 * actionBar.setDisplayShowTitleEnabled(false);
-		 * actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		 * 
-		 * // Set up the dropdown list navigation in the action bar.
-		 * actionBar.setListNavigationCallbacks( // Specify a SpinnerAdapter to
-		 * populate the dropdown list. new
-		 * ArrayAdapter<String>(actionBar.getThemedContext(),
-		 * android.R.layout.simple_list_item_1, android.R.id.text1, new String[]
-		 * { getString(R.string.title_section1),
-		 * getString(R.string.title_section2),
-		 * getString(R.string.title_section3), }), this);
-		 */
-
-		// Button b = ((Button) findViewById(R.id.buttonStart));
-		// b.setOnClickListener(this);
-
 		settings = getSharedPreferences(PREFS_NAME, 0);
-		
-		// CalendarEventManager.init(this);*/
-
-		// Activity Recognition
-		// Set the broadcast receiver intent filer
-		// mBroadcastManager = LocalBroadcastManager.getInstance(this);
-
-		// Create a new Intent filter for the broadcast receiver
-		// mBroadcastFilter = new IntentFilter(Home.SNOOZE);
-
-		// Get detection requester and remover objects
-		// mDetectionRequester = new DetectionRequester(this);
-		// mDetectionRemover = new DetectionRemover(this);
-
-		// IntentFilter gotSnoozeIntentFiler = new IntentFilter(
-		// SNOOZE);
-		// registerReceiver(snoozereceiver, gotSnoozeIntentFiler);
+		IntentFilter iFilter = new IntentFilter(STOP_HOME_ACTIVITY_INTENT);
+		registerReceiver(homeReceiver, iFilter);
 
 	}
 
-	/*
-	 * Handle results returned to this Activity by other Activities started with
-	 * startActivityForResult(). In particular, the method onConnectionFailed()
-	 * in DetectionRemover and DetectionRequester may call
-	 * startResolutionForResult() to start an Activity that handles Google Play
-	 * services problems. The result of this call returns here, to
-	 * onActivityResult.
-	 */
-	@Override
-	// protected void onActivityResult(int requestCode, int resultCode,
-	// Intent intent) {
-	//
-	// // Choose what to do based on the request code
-	// switch (requestCode) {
-	//
-	// // If the request code matches the code sent in onConnectionFailed
-	// case ActivityUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST:
-	//
-	// switch (resultCode) {
-	// // If Google Play services resolved the problem
-	// case Activity.RESULT_OK:
-	//
-	// // If the request was to start activity recognition updates
-	// if (ActivityUtils.REQUEST_TYPE.ADD == mRequestType) {
-	//
-	// // Restart the process of requesting activity recognition
-	// // updates
-	// mDetectionRequester.requestUpdates();
-	//
-	// // If the request was to remove activity recognition updates
-	// } else if (ActivityUtils.REQUEST_TYPE.REMOVE == mRequestType) {
-	//
-	// /*
-	// * Restart the removal of all activity recognition updates
-	// * for the PendingIntent.
-	// */
-	// mDetectionRemover.removeUpdates(mDetectionRequester
-	// .getRequestPendingIntent());
-	//
-	// }
-	// break;
-	//
-	// // If any other result was returned by Google Play services
-	// default:
-	//
-	// // Report that Google Play services was unable to resolve the
-	// // problem.
-	// // Log.d(ActivityUtils.APPTAG,
-	// // getString(R.string.no_resolution));
-	// }
-	//
-	// // If any other request code was received
-	// default:
-	// // Report that this Activity received an unknown requestCode
-	// // Log.d(ActivityUtils.APPTAG,
-	// // getString(R.string.unknown_activity_request_code, requestCode));
-	// break;
-	// }
-	// }
 	/*
 	 * Register the broadcast receiver and update the log of activity updates
 	 */
 	protected void onResume() {
 		super.onResume();
-
+		//
 		Button b = ((Button) findViewById(R.id.buttonStart));
 		if (b == null)
 			Log.d("INFO", "Button start is null");
@@ -245,10 +168,12 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				// button should display start
 				Log.d("INFO", "Service running");
 				b.setText(STOP_TEXT);
+				b.setBackgroundColor(Color.RED);
 			} else {
 				// button should display stop
 				Log.d("INFO", "Service not running");
 				b.setText(START_TEXT);
+				b.setBackgroundColor(Color.GREEN);
 			}
 		} else {
 			UserProfile.init(this);
@@ -393,11 +318,13 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 				Log.d("A/Home", "starting service");
 				b.setText(STOP_TEXT);
+				b.setBackgroundColor(Color.RED);
 
 			} else if (toStart.compareTo(STOP_TEXT) == 0) {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
 				Log.d("A/Home", "stopping service");
 				b.setText(START_TEXT);
+				b.setBackgroundColor(Color.GREEN);
 				// onStopUpdates(v);
 			} else if (toStart.compareTo(CREATE_PROFILE_TEXT) == 0) {
 				Intent intent = new Intent(this, CreateProfileActivity.class);
@@ -434,6 +361,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	// mDetectionRequester.requestUpdates();
 	// }
 
+	public void onDestroy() {
+		unregisterReceiver(homeReceiver);
+		super.onDestroy();
+	}
 	/**
 	 * Respond to "Stop" button by canceling updates.
 	 * 
