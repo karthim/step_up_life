@@ -25,7 +25,7 @@ public class StepUpLifeUtils {
 
 		Notification noti = new Notification.Builder(context)
 				.setContentTitle(title).setContentText(text)
-				.setSmallIcon(R.drawable.smalllogo).setContentIntent(pIntent)
+				.setSmallIcon(R.drawable.tinylogo).setContentIntent(pIntent)
 				.build();
 
 		// hide the notification after its selected
