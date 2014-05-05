@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +24,11 @@ public class SummaryActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "hcc.stepuplife.notificationactivity";
 	private static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
+	private static final String GOAL_REACHED_CONGRATS_MSG = "You reached your goal !!!";
+	private static final String WAY_TO_GO_MSG = "Try harder tomorrow !";
+	private static final String DOING_GREAT_MSG = "You are doing great !!!";
 	private UserStats mStats;
+	private boolean mLaunchedFromService = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,8 @@ public class SummaryActivity extends Activity implements OnClickListener {
 		// Button b = ((Button) findViewById(buttonId));
 		// b.setOnClickListener(this);
 		// }
+		mLaunchedFromService = getIntent()
+				.getBooleanExtra("fromService", false);
 
 	}
 
@@ -52,7 +59,8 @@ public class SummaryActivity extends Activity implements OnClickListener {
 		TextView t;
 
 		t = (TextView) findViewById(R.id.calories);
-		t.setText(String.valueOf(mStats.getCaloriesBurnt()));
+		t.setText(String.valueOf(mStats.getCaloriesBurnt()) + " / "
+				+ String.valueOf(UserStats.TARGET_CALORIES_BURNT));
 
 		t = (TextView) findViewById(R.id.cancel);
 		t.setText(String.valueOf(mStats.getCancelCount()));
@@ -62,10 +70,41 @@ public class SummaryActivity extends Activity implements OnClickListener {
 
 		t = (TextView) findViewById(R.id.lunges);
 		t.setText(String.valueOf(mStats.getlungesCount()));
-		
-		Button b =(Button)findViewById(R.id.buttonClose);
+
+		Button b = (Button) findViewById(R.id.buttonClose);
 		b.setOnClickListener(this);
 
+		ImageView finalTreeImageView = (ImageView) findViewById(R.id.finalTreeImageView);
+		finalTreeImageView.setImageResource(UserStats.ProgressTree
+				.getTreeImageId(mStats.getProgressTree()));
+		t = (TextView) findViewById(R.id.summaryText);
+		if (mStats.isGoalReached())
+			t.setText(GOAL_REACHED_CONGRATS_MSG);
+		else {
+			if (mStats.getPercentageGoalReached() <= 50)
+				t.setText(WAY_TO_GO_MSG);
+			else
+				t.setText(DOING_GREAT_MSG);
+		}
+	}
+
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)
+				|| keyCode == KeyEvent.KEYCODE_HOME) {
+			doFinish();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	private void doFinish() {
+		if (mLaunchedFromService) {
+			stopService(new Intent(SummaryActivity.this,
+					StepUpLifeService.class));
+			Log.d("A/Home", "stopping service");
+			Intent intent = new Intent(STOP_HOME_ACTIVITY_INTENT);
+			sendBroadcast(intent);
+		}
+		finish();
 	}
 
 	int buttonIds[] = { R.id.buttonClose };
@@ -138,11 +177,7 @@ public class SummaryActivity extends Activity implements OnClickListener {
 
 		switch (v.getId()) {
 		case R.id.buttonClose:
-			stopService(new Intent(SummaryActivity.this, StepUpLifeService.class));
-			Log.d("A/Home", "stopping service");
-			Intent intent = new Intent(STOP_HOME_ACTIVITY_INTENT);
-			sendBroadcast(intent);
-			finish();
+			doFinish();
 			break;
 		default:
 			break;

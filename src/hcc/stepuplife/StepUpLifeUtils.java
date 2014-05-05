@@ -57,10 +57,12 @@ public class StepUpLifeUtils {
 		notificationManager.cancelAll();
 	}
 
+	//Service sends notification to notify user that goal has been reached
 	public static void createSummaryNotification(Context context) {
 		// TODO Auto-generated method stub
 		Log.d(LOGTAG, "createSummaryNotification() entered");
 		Intent intent = new Intent(context, SummaryActivity.class);
+		intent.putExtra("fromService", true);
 		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent,
 				Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -69,7 +71,7 @@ public class StepUpLifeUtils {
 		
 		Notification noti = new Notification.Builder(context)
 				.setContentTitle("Step Up Life").setContentText("You have reached your goal !!!")
-				.setSmallIcon(R.drawable.smalllogo).setContentIntent(pIntent)
+				.setSmallIcon(R.drawable.tinylogo).setContentIntent(pIntent)
 				.build();
 
 		// hide the notification after its selected

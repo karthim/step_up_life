@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,14 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			b.setOnClickListener(this);
 		}
 
+	}
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)
+				|| keyCode == KeyEvent.KEYCODE_HOME) {
+			stepUpLifeService.cancelRecommendedExercise();
+			finish();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override

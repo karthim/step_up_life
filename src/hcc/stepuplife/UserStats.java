@@ -88,7 +88,7 @@ public class UserStats {
 	private static final String STATS_PROGRESS_TREE_KEY = "todayStatsTreeOrdinal";
 	private static final String STATS_CANCELCOUNT_KEY = "todayStatsCancelCount";
 
-	private static final int TARGET_CALORIES_BURNT = 60;
+	public static final int TARGET_CALORIES_BURNT = 60;
 
 	private static final String TODAY_STATS_AVAILABLE = "areTodayStatsAvailable";
 

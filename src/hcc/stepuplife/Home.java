@@ -168,12 +168,12 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				// button should display start
 				Log.d("INFO", "Service running");
 				b.setText(STOP_TEXT);
-				b.setBackgroundColor(Color.RED);
+				b.setBackgroundResource(R.drawable.red);
 			} else {
 				// button should display stop
 				Log.d("INFO", "Service not running");
 				b.setText(START_TEXT);
-				b.setBackgroundColor(Color.GREEN);
+				b.setBackgroundResource(R.drawable.green);
 			}
 		} else {
 			UserProfile.init(this);
@@ -318,13 +318,13 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 				Log.d("A/Home", "starting service");
 				b.setText(STOP_TEXT);
-				b.setBackgroundColor(Color.RED);
+				b.setBackgroundResource(R.drawable.red);
 
 			} else if (toStart.compareTo(STOP_TEXT) == 0) {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
 				Log.d("A/Home", "stopping service");
 				b.setText(START_TEXT);
-				b.setBackgroundColor(Color.GREEN);
+				b.setBackgroundResource(R.drawable.green);
 				// onStopUpdates(v);
 			} else if (toStart.compareTo(CREATE_PROFILE_TEXT) == 0) {
 				Intent intent = new Intent(this, CreateProfileActivity.class);

@@ -49,8 +49,8 @@
             android:layout_width="149dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/gray"
-            android:text="Start " />
+            android:background="@drawable/blue"
+            android:text="Create Profile" />
     </LinearLayout>
 
 </LinearLayout>

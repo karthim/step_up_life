@@ -66,8 +66,7 @@
         android:id="@+id/gmailText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="gmail id"
-        android:text="@string/gmailID" >
+        android:hint="example@gmail.com">
     </EditText>
 
     <Button
@@ -76,6 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="8dp"
+        android:background="@drawable/blue"
         android:text="Create" />
 
 </LinearLayout>

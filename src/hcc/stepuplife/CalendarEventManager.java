@@ -40,20 +40,20 @@ public class CalendarEventManager {
 	 *            context
 	 * 
 	 */
-	public static void init(Context c) {
+	public static void init(Context context) {
 		if (mgr == null) {
-			mgr = new CalendarEventManager(c);
-			mgr.populateEventsList();
+			mgr = new CalendarEventManager(context);
+			mgr.populateEventsList(context);
 			mgr.setAlarmForNextEvent();
 		}
 	}
 
-	public static void repopulateEventsList() {
+	public static void repopulateEventsList(Context context) {
 		if (mgr == null) {
 			Log.d(LOGTAG, "Need to init first !");
 			return;
 		}
-		mgr.populateEventsList();
+		mgr.populateEventsList(context);
 	}
 
 	/**
@@ -72,16 +72,27 @@ public class CalendarEventManager {
 	/**
 	 * populate events list from the calendar
 	 */
-	private void populateEventsList() {
+	private void populateEventsList(Context context) {
 		// Query Calendar Provider, and populate today's events in events list.
 		events = new ArrayList<IntentTriggerEvent>();
-		String userGmailID = "devj1988@gmail.com";
+		if (UserProfile.isUserProfileCreated(context) == false) {
+			Log.d(LOGTAG, "user profile does not exist!!!");
+			return;
+		}
+
+		String userGmailID;
+		try {
+			userGmailID = UserProfile.getGmailID();
+		} catch (UserProfileNotFoundException e) {
+			// TODO Auto-generated catch block
+			Log.d(LOGTAG, "user profile does not exist!!!");
+			return;
+		}
 		String[] EVENT_PROJECTION = new String[] { Calendars._ID, // 0
 				Calendars.ACCOUNT_NAME, // 1
 				Calendars.CALENDAR_DISPLAY_NAME, // 2
 				Calendars.OWNER_ACCOUNT // 3
 		};
-		
 
 		Cursor cur = null;
 		ContentResolver cr = appContext.getContentResolver();
@@ -111,8 +122,7 @@ public class CalendarEventManager {
 		if (calID == -1) {
 			Log.d(LOGTAG, "No calID for given gmail id found ");
 			return;
-		}
-		else
+		} else
 			Log.d(LOGTAG, "Found calendar");
 
 		Long now = System.currentTimeMillis();
