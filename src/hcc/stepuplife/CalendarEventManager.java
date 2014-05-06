@@ -21,7 +21,7 @@ import android.util.Log;
 public class CalendarEventManager {
 
 	private static final String LOGTAG = "C/CalendarEventManager";
-	private AlarmManager alarmManager;
+
 	private PendingIntent pendingIntent;
 	private ArrayList<IntentTriggerEvent> events;
 	public static final String ALARM_INTENT_START_ACTION = "hcc.stepuplife.meeting_start";
@@ -171,6 +171,122 @@ public class CalendarEventManager {
 			Log.d(LOGTAG, "No events in next 12 hours!");
 		} else
 			Log.d(LOGTAG, "Added all events !");
+	}
+
+	private static PendingIntent staticPendingIntent;
+	private static AlarmManager alarmManager;
+
+	public static boolean isCalendarEventOn(Context context) {
+		// Query Calendar Provider, and populate today's events in events list.
+		if (UserProfile.isUserProfileCreated(context) == false) {
+			Log.d(LOGTAG, "user profile does not exist!!!");
+			return false;
+		}
+
+		String userGmailID;
+		try {
+			userGmailID = UserProfile.getGmailID();
+		} catch (UserProfileNotFoundException e) {
+			// TODO Auto-generated catch block
+			Log.d(LOGTAG, "user profile does not exist!!!");
+			return false;
+		}
+		String[] EVENT_PROJECTION = new String[] { Calendars._ID, // 0
+				Calendars.ACCOUNT_NAME, // 1
+				Calendars.CALENDAR_DISPLAY_NAME, // 2
+				Calendars.OWNER_ACCOUNT // 3
+		};
+
+		Cursor cur = null;
+		ContentResolver cr = context.getContentResolver();
+		assert cr != null;
+		Uri uri = Calendars.CONTENT_URI;
+
+		// Find a calendar
+		String selection = "((" + Calendars.ACCOUNT_NAME + " = ?) AND ("
+				+ Calendars.ACCOUNT_TYPE + " = ?) AND ("
+				+ Calendars.OWNER_ACCOUNT + " = ?))";
+		String[] selectionArgs = new String[] { userGmailID, "com.google",
+				userGmailID };
+
+		int PROJECTION_ID_INDEX = 0;
+		int PROJECTION_ACCOUNT_NAME_INDEX = 1;
+		int PROJECTION_DISPLAY_NAME_INDEX = 2;
+		int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
+
+		// // Submit the query and get a Cursor object back.
+		Long calID = -1L;
+		cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
+		assert cur != null;
+		while (cur.moveToNext()) {
+			// Get the calendar id
+			calID = cur.getLong(PROJECTION_ID_INDEX);
+		}
+		if (calID == -1) {
+			Log.d(LOGTAG, "No calendar for " + userGmailID);
+			return false;
+		} else
+			Log.d(LOGTAG, "Found calendar for " + userGmailID);
+
+		Long now = System.currentTimeMillis();
+		Long twelveHoursFromNow = now + 3600 * 12 * 1000;
+		Long twoHoursBeforeNow = now - 3600 * 12 * 1000;
+		EVENT_PROJECTION = new String[] { Events.CALENDAR_ID, Events.DTSTART, // 0
+				Events.DTEND // 3
+		};
+
+		int PROJECTION_STARTTIME_INDEX = 1;
+		int PROJECTION_STOPTIME_INDEX = 2;
+
+		uri = Events.CONTENT_URI;
+		selection = "((" + Events.CALENDAR_ID + " = ?) AND (" + Events.DTSTART
+				+ " > ?) AND (" + Events.DTEND + " < ?))";
+		selectionArgs = new String[] { calID.toString(),
+				twoHoursBeforeNow.toString(), twelveHoursFromNow.toString() };
+
+		// selection = "(("+Events.CALENDAR_ID + " = ?))";
+		// selectionArgs = new String[] { calID.toString() };
+
+		// Submit the query and get a Cursor object back.
+		cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
+		assert cur != null;
+		long startTime = 0;
+		long stopTime = 0;
+		// Note, assuming there are no overlapping events
+
+		// DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		// format.setTimeZone(TimeZone.getTimeZone("UTC-6:00"));
+		if (staticPendingIntent != null)
+			return true;
+
+		while (cur.moveToNext()) {
+			// Get the field values
+			startTime = cur.getLong(PROJECTION_STARTTIME_INDEX);
+			stopTime = cur.getLong(PROJECTION_STOPTIME_INDEX);
+			if (now <= startTime)
+				return false;
+			if (now >= startTime && now <= stopTime) {
+				Log.d(LOGTAG, "Found meeting");
+				Intent alarmIntent = new Intent(ALARM_INTENT_STOP_ACTION);
+				staticPendingIntent = PendingIntent.getBroadcast(context, 0,
+						alarmIntent, 0);
+				if (alarmManager == null) {
+					alarmManager = (AlarmManager) context
+							.getSystemService(Context.ALARM_SERVICE);
+				}
+				alarmManager.set(AlarmManager.RTC_WAKEUP, stopTime + 5 * 1000,
+						staticPendingIntent); // 5 secs after meeting ends
+				Log.d(LOGTAG, "Added new event to alarmManager");
+				return true;
+			}
+
+			// Do something with the values...
+		}
+		return false;
+	}
+
+	public static void notifyEndMeetingNotificationReceived() {
+		staticPendingIntent = null;
 	}
 
 	/**

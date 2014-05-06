@@ -110,16 +110,21 @@ public class StepUpLifeService extends Service {
 			// intent.getAction());
 			if (intent.getAction().equals(
 					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
-				StepUpLifeService.this.processAlarmCalendarEvent(true);
+				// StepUpLifeService.this.processAlarmCalendarEvent(true);
 			} else if (intent.getAction().equals(
-					CalendarEventManager.ALARM_INTENT_START_ACTION)) {
-				StepUpLifeService.this.processAlarmCalendarEvent(false);
+					CalendarEventManager.ALARM_INTENT_STOP_ACTION)) {
+				CalendarEventManager.notifyEndMeetingNotificationReceived();
+				StepUpLifeService.this.handleEndMeetingEvent();
+				// StepUpLifeService.this.processAlarmCalendarEvent(false);
 			} else if (intent.getAction().equals(SNOOZE_WAKEUP_INTENT_STRING)) {
 				Log.i(LOGTAG, "Snooze timeout");
-				if (!mCalendarEventOn)
+				if (!CalendarEventManager
+						.isCalendarEventOn(StepUpLifeService.this))
 					notifyUserForExercise();
-				else
+				else {
 					StepUpLifeService.this.mIdleTimeOut = true;
+					StepUpLifeService.this.stopMonitoringActivity(false);
+				}
 			} else if (intent.getAction()
 					.equals(EXERCISE_TIMEOUT_INTENT_STRING)) {
 				// notifyUser();
@@ -128,16 +133,19 @@ public class StepUpLifeService extends Service {
 				startMonitoringActivity();
 			} else if (intent.getAction().equals(IDLE_TIMEOUT_INTENT_STRING)) {
 				Log.i(LOGTAG, "Idle timeout");
-				if (!mCalendarEventOn)
+				if (!CalendarEventManager
+						.isCalendarEventOn(StepUpLifeService.this))
 					notifyUserForExercise();
-				else
+				else {
 					StepUpLifeService.this.mIdleTimeOut = true;
+					StepUpLifeService.this.stopMonitoringActivity(false);
+				}
 			} else if (intent.getAction().equals(ACTIVITY_GOT_INTENT_STRING)) {
 				if (activityIntentCount < 5) {
 					Log.i(LOGTAG, "got activity intent");
 					activityIntentCount++;
 				}
-				if (!isMonitoring()) {
+				if (!isMonitoring() || StepUpLifeService.this.mIdleTimeOut) {
 					// Log.i(LOGTAG,
 					// "not processing activity intent as monitoring is disabled");
 					return;
@@ -212,6 +220,20 @@ public class StepUpLifeService extends Service {
 		}
 		Log.i(LOGTAG, "Seems user is moving");
 		return true;
+
+	}
+
+	protected void handleEndMeetingEvent() {
+		// TODO Auto-generated method stub
+		Log.d(LOGTAG, "Calendar event alarm received");
+
+		mCalendarEventOn = false;
+		if (mIdleTimeOut) {
+			Log.d(LOGTAG, "Idle timeout had occured, so will notify after 5 secs");
+			startTimer(IDLE_TIMEOUT_INTENT_STRING, AFTER_MEETING_END_GAP_MIN
+					* MILLISECS_PER_MIN);
+		}
+		startMonitoringActivity();
 
 	}
 
@@ -470,7 +492,7 @@ public class StepUpLifeService extends Service {
 		// getSystemService(NOTIFICATION_SERVICE);
 		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-		CalendarEventManager.init(this);
+		// CalendarEventManager.init(this);
 
 		String[] intentFilterStringArray = {
 				CalendarEventManager.ALARM_INTENT_START_ACTION,
@@ -698,7 +720,7 @@ public class StepUpLifeService extends Service {
 	public void doCleanUp() {
 		Log.d(LOGTAG, "Unregistering broadcast receiver");
 		unregisterReceiver(stepUpLifeReceiver);
-		CalendarEventManager.release();
+		// CalendarEventManager.release();
 	}
 
 	/**
