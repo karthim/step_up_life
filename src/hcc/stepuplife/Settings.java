@@ -20,14 +20,15 @@ public class Settings extends Activity {
 	public static final String PREFS_NAME = "stepuplifePrefs";
 	public static final String IDLE_TIME = "idletime";
 	public static final String SNOOZE_TIME = "snoozetime";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
-		
-		LinearLayout layout = (LinearLayout) findViewById(R.id.container);
-		layout.setBackgroundResource(R.drawable.blue);
-		
+
+		LinearLayout layout = (LinearLayout) findViewById(R.id.settingRootLayout);
+		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
+
 		settings = getSharedPreferences(PREFS_NAME, 0);
 	}
 
@@ -67,18 +68,19 @@ public class Settings extends Activity {
 			return rootView;
 		}
 	}
-	
-    public void updateSharedPref(View view) {
-    	
-    	EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
-    	int idletime = Integer.parseInt(editTextidletime.getText().toString()); 
 
-    	EditText editTextsnoozetime = (EditText) findViewById(R.id.editTextsnooze);
-    	int snoozetime = Integer.parseInt(editTextsnoozetime.getText().toString());   	
-    	
-    	settings.edit().putInt(IDLE_TIME, idletime).commit();
-    	settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
-    	
-    }
+	public void updateSharedPref(View view) {
+
+		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
+		int idletime = Integer.parseInt(editTextidletime.getText().toString());
+
+		EditText editTextsnoozetime = (EditText) findViewById(R.id.editTextsnooze);
+		int snoozetime = Integer.parseInt(editTextsnoozetime.getText()
+				.toString());
+
+		settings.edit().putInt(IDLE_TIME, idletime).commit();
+		settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
+
+	}
 
 }

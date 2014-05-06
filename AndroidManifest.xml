@@ -61,11 +61,11 @@
 
         <activity
             android:name="hcc.stepuplife.SummaryActivity"
-            android:label="@string/title_activity_summary" >
+            android:label="@string/title_activity_summary" android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="hcc.stepuplife.Settings"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings" android:screenOrientation="portrait">
         </activity>
     </application>
 
