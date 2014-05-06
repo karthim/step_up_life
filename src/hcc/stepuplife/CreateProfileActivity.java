@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -28,28 +28,28 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_profile);
-		
-		LinearLayout layout =(LinearLayout)findViewById(R.id.LinearLytUserProfile);
+
+		LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLytUserProfile);
 		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
-		
+
 		mUpdate = getIntent().getBooleanExtra("update", false);
 
 	}
-	
+
 	public void finish() {
-		  // Prepare data intent 
-		  Intent data = new Intent();
-		  if(mProfileCreated = true)
-			  setResult(RESULT_OK, data);
-		  else
-			  setResult(RESULT_CANCELED, data);
-		  super.finish();
-		} 
+		// Prepare data intent
+		Intent data = new Intent();
+		if (mProfileCreated = true)
+			setResult(RESULT_OK, data);
+		else
+			setResult(RESULT_CANCELED, data);
+		super.finish();
+	}
 
 	protected void onResume() {
 		super.onResume();
 
-		Button b = ((Button) findViewById(R.id.buttonCreate));
+		ImageButton b = ((ImageButton) findViewById(R.id.buttonCreate));
 		if (b == null)
 			Log.d("INFO", "Button Create is null");
 		else
@@ -60,8 +60,8 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 			TextView gmailText = ((TextView) findViewById(R.id.gmailText));
 			TextView ageText = ((TextView) findViewById(R.id.ageText));
 			RadioGroup radioGender = ((RadioGroup) findViewById(R.id.genderRadio));
-			b.setText("Update");
 			
+
 			try {
 				nameText.setText(UserProfile.getUserName());
 				ageText.setText(UserProfile.getAge());
@@ -120,7 +120,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		Button b = (Button) v;
+		ImageButton b = (ImageButton) v;
 		switch (v.getId()) {
 		case R.id.buttonCreate:
 			String userName = ((TextView) findViewById(R.id.nameText))
@@ -181,7 +181,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 					Log.d(LOGTAG, "User Profile created");
 					StepUpLifeUtils
 							.showToast(this, "Your profile is saved !!!");
-					mProfileCreated  = true;
+					mProfileCreated = true;
 				} else
 					Log.d(LOGTAG, "User Profile exists?");
 			}

@@ -6,13 +6,13 @@
     android:layout_alignParentBottom="true"
     android:layout_alignParentRight="true"
     android:layout_alignParentTop="true"
+    android:background="@drawable/afternoon"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="hcc.stepuplife.CreateProfileActivity"
-    android:background ="@drawable/afternoon" >
+    tools:context="hcc.stepuplife.CreateProfileActivity" >
 
     <TextView
         android:id="@+id/GendertTextMsg"
@@ -30,65 +30,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/nameIndi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="Name" 
-            android:background ="@drawable/white"
             android:layout_marginRight="5dp"
-            android:textStyle="italic"
-            />
+            android:background="@drawable/white"
+            android:gravity="left"
+            android:text="Name"
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/nameText"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/lblue"
             android:gravity="center_horizontal"
-            android:hint="John Smith" 
-            android:background ="@drawable/lblue"
-             android:paddingLeft="10dp"
-             >
+            android:hint="John Smith"
+            android:paddingLeft="10dp" >
 
             <requestFocus />
         </EditText>
-        
+
         <requestFocus />
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="10dp"
-        >
+        android:paddingTop="10dp" >
 
         <TextView
             android:id="@+id/ageIndi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="Age" 
             android:layout_marginRight="5dp"
-            android:background ="@drawable/white"
-            android:textStyle="italic"/>
+            android:background="@drawable/white"
+            android:gravity="left"
+            android:text="Age"
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/ageText"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/lblue"
             android:gravity="center_horizontal"
             android:hint="25"
-            android:inputType="numberSigned"
-             android:background ="@drawable/lblue"
-             
-             />
+            android:inputType="numberSigned" />
     </LinearLayout>
 
     <LinearLayout
@@ -102,18 +95,18 @@
             android:id="@+id/GendertTextMsg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/white"
             android:gravity="left"
             android:text="Gender"
-            android:layout_marginRight="5dp"
-            android:background ="@drawable/white" 
-            android:textStyle="italic"/>
+            android:textStyle="italic" />
 
         <RadioGroup
             android:id="@+id/genderRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background ="@drawable/lblue"  >
+            android:background="@drawable/lblue"
+            android:orientation="horizontal" >
 
             <RadioButton
                 android:id="@+id/male"
@@ -135,37 +128,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal" 
-         android:paddingTop="10dp"
-         android:paddingBottom="30dp" >
+        android:orientation="horizontal"
+        android:paddingBottom="30dp"
+        android:paddingTop="10dp" >
 
         <TextView
             android:id="@+id/gmailIndi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
+            android:background="@drawable/white"
             android:gravity="center"
-            android:text="Gmail ID" 
-            android:background ="@drawable/white"
-            android:textStyle="italic"/>
+            android:text="Gmail ID"
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/gmailText"
             android:layout_width="210dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/lblue"
             android:gravity="center_horizontal"
-            android:hint="example@gmail.com"
-             android:background ="@drawable/lblue" >
+            android:hint="example@gmail.com" >
         </EditText>
     </LinearLayout>
 
-    <Button
+    <ImageButton
         android:id="@+id/buttonCreate"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_marginTop="8dp"
         android:background="@drawable/green"
-        android:text="Create" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/tick_icon" />
 
 </LinearLayout>

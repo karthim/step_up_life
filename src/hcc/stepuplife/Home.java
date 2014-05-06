@@ -2,11 +2,8 @@ package hcc.stepuplife;
 
 import hcc.stepuplife.ActivityUtils.REQUEST_TYPE;
 
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.lang.ref.WeakReference;
 
-
-import android.app.ActionBar;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -17,8 +14,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -31,8 +29,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -65,7 +63,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private static final int MORNING_THRESHOLD = 6;
 	private static final int REQUEST_CODE = 0;
 
-	private void updateTextView(boolean profileNotCreated) {
+	private void updateTextView(boolean profileNotCreated, boolean isStarted) {
 
 		TextView greetText = (TextView) findViewById(R.id.greetUser);
 		if (profileNotCreated) {
@@ -73,7 +71,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			return;
 		}
 
-		greetText.setText(StepUpLifeUtils.getGreetingText());
+		greetText.setText(StepUpLifeUtils.getGreetingText(isStarted));
 
 	}
 
@@ -151,32 +149,37 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	protected void onResume() {
 		super.onResume();
 		//
-		Button b = ((Button) findViewById(R.id.buttonStart));
+		ImageButton b = ((ImageButton) findViewById(R.id.buttonStart));
 		if (b == null)
 			Log.d("INFO", "Button start is null");
 		else
 			Log.d("INFO", "Button start is not null");
 		if (UserProfile.isUserProfileCreated(this)) {
-			updateTextView(false);
+
 			Log.d("INFO", "User profile exists");
 			// @TODO: Change this; call bindService in onCreate and call
 			// isRunning
 			if (settings.getBoolean("serviceRunning", false)) {
+				updateTextView(false, true);
 				// button should display start
 				Log.d("INFO", "Service running");
-				b.setText(STOP_TEXT);
-				b.setBackgroundResource(R.drawable.red2);
+				b.setTag(STOP_TEXT);
+				b.setImageResource(R.drawable.stop);
+				b.setBackgroundResource(R.drawable.red);
 			} else {
 				// button should display stop
 				Log.d("INFO", "Service not running");
-				b.setText(START_TEXT);
+				updateTextView(false, true);
+				b.setTag(START_TEXT);
+				b.setImageResource(R.drawable.play);
 				b.setBackgroundResource(R.drawable.green);
 			}
 		} else {
 			UserProfile.init(this);
-			updateTextView(true);
+			updateTextView(true, false);
 			Log.d("INFO", "User profile not created");
-			b.setText(CREATE_PROFILE_TEXT);
+			b.setImageResource(R.drawable.create_profile_icon);
+			b.setTag(CREATE_PROFILE_TEXT);
 		}
 
 		b.setOnClickListener(this);
@@ -205,10 +208,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-	    // Inflate the menu items for use in the action bar
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.home, menu);
-	    return super.onCreateOptionsMenu(menu);		
+		// Inflate the menu items for use in the action bar
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.home, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -219,7 +222,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			Intent intent = new Intent(this, Settings.class);
-	    	startActivity(intent);
+			startActivity(intent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -299,14 +302,46 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	// }
 	// }
 
+//	class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+//	    private final WeakReference<ImageView> imageViewReference;
+//	    private int data = 0;
+//
+//	    public BitmapWorkerTask(ImageView imageView) {
+//	        // Use a WeakReference to ensure the ImageView can be garbage collected
+//	        imageViewReference = new WeakReference<ImageView>(imageView);
+//	    }
+//
+//	    // Decode image in background.
+//	    @Override
+//	    protected Bitmap doInBackground(Integer... params) {
+//	        data = params[0];
+//	        return decodeSampledBitmapFromResource(getResources(), data, 100, 100));
+//	    }
+//
+//	    // Once complete, see if ImageView is still around and set bitmap.
+//	    @Override
+//	    protected void onPostExecute(Bitmap bitmap) {
+//	        if (imageViewReference != null && bitmap != null) {
+//	            final ImageView imageView = imageViewReference.get();
+//	            if (imageView != null) {
+//	                imageView.setImageBitmap(bitmap);
+//	            }
+//	        }
+//	    }
+//	}
+	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		Button b = (Button) v;
+		ImageButton b = (ImageButton) v;
 		switch (v.getId()) {
 
 		case R.id.buttonStart:
-			String toStart = (String) b.getText();
+			String toStart = (String) b.getTag();
+			if (toStart == null) {
+				Log.d("INFO", "No tag set for the imagebutton");
+				return;
+			}
 			if (toStart.compareTo(START_TEXT) == 0) {
 
 				Intent startIntent = new Intent(Home.this,
@@ -317,14 +352,16 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				// onStartUpdates(v);
 
 				Log.d("A/Home", "starting service");
-				b.setText(STOP_TEXT);
+				b.setTag(STOP_TEXT);
 				b.setBackgroundResource(R.drawable.red);
+				b.setImageResource(R.drawable.stop);
 
 			} else if (toStart.compareTo(STOP_TEXT) == 0) {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
 				Log.d("A/Home", "stopping service");
-				b.setText(START_TEXT);
+				b.setTag(START_TEXT);
 				b.setBackgroundResource(R.drawable.green);
+				b.setImageResource(R.drawable.play);
 				// onStopUpdates(v);
 			} else if (toStart.compareTo(CREATE_PROFILE_TEXT) == 0) {
 				Intent intent = new Intent(this, CreateProfileActivity.class);
@@ -340,9 +377,9 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_CODE) {
 			if (resultCode == RESULT_OK)
-				updateTextView(true);
+				updateTextView(true, false);
 			else
-				updateTextView(false);
+				updateTextView(false, false);
 		}
 
 	}

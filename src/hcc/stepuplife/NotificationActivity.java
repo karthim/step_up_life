@@ -16,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,7 +35,7 @@ public class NotificationActivity extends Activity implements OnClickListener {
 
 		mStats = UserStats.loadActivityStats(this);
 		if (mStats == null) {
-			Log.d(LOGTAG,"mStats is null");
+			Log.d(LOGTAG, "mStats is null");
 			mStats = new UserStats();
 		}
 		Intent startIntent = new Intent(NotificationActivity.this,
@@ -43,7 +43,7 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
 
 		for (int buttonId : buttonIds) {
-			Button b = ((Button) findViewById(buttonId));
+			ImageButton b = ((ImageButton) findViewById(buttonId));
 			b.setOnClickListener(this);
 		}
 
@@ -84,6 +84,7 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			// findViewById(R.id.imageView1);
 			GifMovieView animView = (GifMovieView) findViewById(R.id.animView);
 			ImageView treeStageImage = (ImageView) findViewById(R.id.oakTreeStageImageView);
+
 			if (animView == null || treeStageImage == null) {
 				Log.d(LOGTAG, "animView and treeStageImage are null");
 			} else {
@@ -96,11 +97,12 @@ public class NotificationActivity extends Activity implements OnClickListener {
 				String exerciseString = UserStats.ExerciseType
 						.getExerciseTypeFromAnimId(imageId).toString();
 				TextView t = (TextView) findViewById(R.id.exerciseTypeTextMsg);
-				t.setText("Time for " + exerciseString);
+				t.setText("Time for " + exerciseString + " !");
 
 				imageId = UserStats.ProgressTree.getTreeStageImageId(mStats
 						.getProgressTree());
 				treeStageImage.setImageResource(imageId);
+				treeStageImage.setOnClickListener(NotificationActivity.this);
 
 			}
 		}
@@ -176,6 +178,10 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			} else
 				Log.d("INFO", "stepUpLifeService is null, cannot snooze !");
 			finish();
+			break;
+		case R.id.oakTreeStageImageView:
+			Intent intent = new Intent(this, SummaryActivity.class);
+			startActivity(intent);
 			break;
 		default:
 			break;

@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,9 +22,9 @@ public class SummaryActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "hcc.stepuplife.notificationactivity";
 	private static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
-	private static final String GOAL_REACHED_CONGRATS_MSG = "You reached your goal !!!";
-	private static final String WAY_TO_GO_MSG = "Try harder tomorrow !";
-	private static final String DOING_GREAT_MSG = "You are doing great !!!";
+	private static final String GOAL_REACHED_CONGRATS_MSG = "Congrats ! You reached your goal !";
+	private static final String WAY_TO_GO_MSG = "Try harder, you can do it !";
+	private static final String DOING_GREAT_MSG = "You are on track !";
 	private UserStats mStats;
 	private boolean mLaunchedFromService = false;
 
@@ -66,12 +66,12 @@ public class SummaryActivity extends Activity implements OnClickListener {
 		t.setText(String.valueOf(mStats.getCancelCount()));
 
 		t = (TextView) findViewById(R.id.pushups);
-		t.setText(String.valueOf(mStats.getPushupsCount()));
+		t.setText(String.valueOf(mStats.getPushupsCount()) + " sets");
 
 		t = (TextView) findViewById(R.id.lunges);
-		t.setText(String.valueOf(mStats.getlungesCount()));
+		t.setText(String.valueOf(mStats.getlungesCount()) + " sets");
 
-		Button b = (Button) findViewById(R.id.buttonClose);
+		ImageButton b = (ImageButton) findViewById(R.id.buttonClose);
 		b.setOnClickListener(this);
 
 		ImageView finalTreeImageView = (ImageView) findViewById(R.id.finalTreeImageView);

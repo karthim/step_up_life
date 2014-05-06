@@ -68,9 +68,9 @@ public class UserStats {
 		public String toString() {
 			switch (this) {
 			case PUSHUPS:
-				return "pushups";
+				return "Pushups (10 reps)";
 			case LUNGES:
-				return "lunges";
+				return "Lunges (10 reps)";
 			default:
 				return null;
 			}

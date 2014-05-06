@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/summaryText"
-            android:layout_width="236dp"
+            android:layout_width="330dp"
             android:layout_height="44dp"
             android:background="@drawable/yellow"
             android:gravity="center"
@@ -30,7 +30,7 @@
             android:layout_width="197dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
-            android:src="@drawable/oak_tree_1_transparent" />
+            android:src="@drawable/oak_tree_1" />
 
         <TableLayout
             android:id="@+id/summaryTable"
@@ -101,7 +101,7 @@
                     android:id="@+id/pushupsText"
                     android:background="@drawable/white"
                     android:gravity="center"
-                    android:text="Pushups">
+                    android:text="Pushups (10 reps)">
 
                 </TextView>
 
@@ -125,7 +125,7 @@
                     android:id="@+id/lungesText"
                     android:background="@drawable/white"
                     android:gravity="center"
-                    android:text="Lunges" 
+                    android:text="Lunges (10 reps)" 
                     >
                     
                 </TextView>
@@ -164,14 +164,17 @@
             </TableRow>
         </TableLayout>
 
-        <Button
+        <ImageButton
             android:id="@+id/buttonClose"
-            android:layout_width="149dp"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            
+            android:layout_height="50dp"
             android:layout_gravity="center"
-            android:background="@drawable/gray"
-            android:layout_marginTop="30dp"
-            android:text="Close " />
+            android:layout_marginTop="20dp"
+            android:background="@drawable/green"
+            android:scaleType="fitCenter"
+            android:src="@drawable/tick_icon" />
+
     </LinearLayout>
 
 </FrameLayout>
