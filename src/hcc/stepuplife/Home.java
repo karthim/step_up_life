@@ -168,7 +168,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				// button should display start
 				Log.d("INFO", "Service running");
 				b.setText(STOP_TEXT);
-				b.setBackgroundResource(R.drawable.red);
+				b.setBackgroundResource(R.drawable.red2);
 			} else {
 				// button should display stop
 				Log.d("INFO", "Service not running");

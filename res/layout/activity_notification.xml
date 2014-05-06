@@ -19,7 +19,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/GendertTextMsg"
+            android:id="@+id/exerciseTypeTextMsg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -31,9 +31,15 @@
         <ImageView
             android:id="@+id/imageView1"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/stepuplife" />
+        <ImageView
+            android:id="@+id/oakTreeStageImageView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/oakallstage1" />
 
     </LinearLayout>
 
@@ -56,9 +62,20 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
-                android:background="@drawable/gray"
+                android:background="@drawable/yellow"
+                android:minHeight="90dp"
                 android:text="Snooze" />
 
+               <Button
+                android:id="@+id/btn_reminder_doit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/green"
+                android:text="Do it !" />
+               
             <Button
                 android:id="@+id/btn_reminder_cancel"
                 android:layout_width="0dp"
@@ -68,18 +85,10 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
-                android:background="@drawable/gray"
+                android:background="@drawable/red2"
                 android:text="Cancel" />
 
-            <Button
-                android:id="@+id/btn_reminder_doit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"
-                android:background="@drawable/gray"
-                android:text="Do it !" />
+         
 
         </LinearLayout>
 

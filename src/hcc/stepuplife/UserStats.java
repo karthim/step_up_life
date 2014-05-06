@@ -29,6 +29,26 @@ public class UserStats {
 
 		}
 
+		public static int getTreeStageImageId(ProgressTree tree) {
+			switch (tree) {
+			case SAPLING:
+				return R.drawable.oakallstage1_transparent;
+			case BUSH:
+				return R.drawable.oakallstage2_transparent;
+			case PLANT:
+				return R.drawable.oakallstage3_transparent;
+			case TREE:
+				return R.drawable.oakallstage4_transparent;
+			case BIGTREE:
+				return R.drawable.oakallstage5_transparent;
+			case FINALTREE:
+				return R.drawable.oakallstage6_transparent;
+			default:
+				return R.drawable.stepuplife;
+			}
+
+		}
+
 	}
 
 	public enum ExerciseType {
@@ -42,6 +62,17 @@ public class UserStats {
 				return R.drawable.exercise2;
 			default:
 				return R.drawable.exercise3;
+			}
+		}
+
+		public String toString() {
+			switch (this) {
+			case PUSHUPS:
+				return "pushups";
+			case LUNGES:
+				return "lunges";
+			default:
+				return null;
 			}
 		}
 

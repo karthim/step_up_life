@@ -87,6 +87,8 @@ public class SummaryActivity extends Activity implements OnClickListener {
 				t.setText(DOING_GREAT_MSG);
 		}
 	}
+	
+	
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)

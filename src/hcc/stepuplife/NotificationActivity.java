@@ -19,10 +19,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class NotificationActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "hcc.stepuplife.notificationactivity";
+	private UserStats mStats;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,11 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_notification);
 		LinearLayout layout = (LinearLayout) findViewById(R.id.notificationllayout);
 		layout.setBackgroundResource(R.drawable.commonbgd);
+
+		mStats = UserStats.loadActivityStats(this);
+		if (mStats == null) {
+			mStats = new UserStats();
+		}
 		Intent startIntent = new Intent(NotificationActivity.this,
 				StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -40,6 +47,7 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		}
 
 	}
+
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)
 				|| keyCode == KeyEvent.KEYCODE_HOME) {
@@ -67,19 +75,29 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			stepUpLifeService = ((StepUpLifeService.StepUpLifeServiceBinder) service)
 					.getService();
-			ImageView v = (ImageView) findViewById(R.id.imageView1);
-			if (v == null) {
-				Log.d(LOGTAG, "Imageview is null");
+			if (stepUpLifeService == null) {
+				Log.d(LOGTAG, "stepUpLifeService is null inside mConnection !");
+				// Dunno whats going on here, temporary fix
+			}
+			ImageView exerciseImage = (ImageView) findViewById(R.id.imageView1);
+			ImageView treeStageImage = (ImageView) findViewById(R.id.oakTreeStageImageView);
+			if (exerciseImage == null || treeStageImage == null) {
+				Log.d(LOGTAG, "exerciseImage and treeStageImage are null");
 			} else {
-				if (stepUpLifeService == null) {
-					Log.d(LOGTAG,
-							"stepUpLifeService is null inside mConnection !");
-					// Dunno whats going on here, temporary fix
-				} else {
-					int imageId = stepUpLifeService.getExerciseImageId();
-					NotificationActivity.this.mExerciseImageId = imageId;
-					v.setImageResource(imageId);
-				}
+
+				int imageId = stepUpLifeService.getExerciseImageId();
+				NotificationActivity.this.mExerciseImageId = imageId;
+				exerciseImage.setImageResource(imageId);
+
+				String exerciseString = UserStats.ExerciseType
+						.getExerciseTypeFromImageId(imageId).toString();
+				TextView t = (TextView) findViewById(R.id.exerciseTypeTextMsg);
+				t.setText("Time for " + exerciseString);
+
+				imageId = UserStats.ProgressTree.getTreeStageImageId(mStats
+						.getProgressTree());
+				treeStageImage.setImageResource(imageId);
+
 			}
 		}
 
