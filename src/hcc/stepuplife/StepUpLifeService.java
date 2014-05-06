@@ -57,12 +57,12 @@ public class StepUpLifeService extends Service {
 	private static final String SNOOZE_WAKEUP_INTENT_STRING = "hcc.stepuplife.snooze_wakeup";
 
 	private static final long MILLISECS_PER_MIN = 60 * 1000;
-	private static final long SNOOZE_MIN = 1;
-	private static final long IDLE_TIMEOUT_MIN = 1;
+	private static long SNOOZE_MIN = 1;
+	private static long IDLE_TIMEOUT_MIN = 1;
 	private static final long SNOOZE_TIMEOUT_MILLISECS = SNOOZE_MIN
 			* MILLISECS_PER_MIN;
 	private static final String EXERCISE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.exercise_timeout";
-	private static final long EXERCISE_TIMEOUT_MIN = 1;
+	private static long EXERCISE_TIMEOUT_MIN = 1;
 	private static final long EXERCISE_TIMEOUT_MILLISECS = EXERCISE_TIMEOUT_MIN
 			* MILLISECS_PER_MIN;
 	private static final long IDLE_TIMEOUT_MILLISECS = IDLE_TIMEOUT_MIN
@@ -97,6 +97,14 @@ public class StepUpLifeService extends Service {
 	public int percentGoalReached() {
 		int percentGoalReached = 100 * (exerciseCount / target);
 		return percentGoalReached < 100 ? percentGoalReached : 100;
+	}
+
+	private void setDebugerTimerValues() {
+		if (StepUpLifeUtils.DEBUG == false)
+			return;
+		SNOOZE_MIN = 1;
+		IDLE_TIMEOUT_MIN = 1;
+		EXERCISE_TIMEOUT_MIN = 1;
 	}
 
 	private BroadcastReceiver stepUpLifeReceiver = new BroadcastReceiver() {
@@ -229,7 +237,8 @@ public class StepUpLifeService extends Service {
 
 		mCalendarEventOn = false;
 		if (mIdleTimeOut) {
-			Log.d(LOGTAG, "Idle timeout had occured, so will notify after 5 secs");
+			Log.d(LOGTAG,
+					"Idle timeout had occured, so will notify after 5 secs");
 			startTimer(IDLE_TIMEOUT_INTENT_STRING, AFTER_MEETING_END_GAP_MIN
 					* MILLISECS_PER_MIN);
 		}
@@ -459,7 +468,7 @@ public class StepUpLifeService extends Service {
 		mPrefs = getApplicationContext().getSharedPreferences(
 				ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-		//mBroadcastManager = LocalBroadcastManager.getInstance(this);
+		// mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
 		// Create a new Intent filter for the broadcast receiver
 		mBroadcastFilter = new IntentFilter(Home.SNOOZE);
@@ -631,7 +640,7 @@ public class StepUpLifeService extends Service {
 
 	public void startMonitoringActivity() {
 		// TODO Auto-generated method stub
-
+		setDebugerTimerValues();
 		settings.edit().putBoolean("monitoring", true);
 		serviceState = ServiceState.RUNNING_MONITORING;
 		Log.d(LOGTAG, "Started activity monitoring");
@@ -688,7 +697,7 @@ public class StepUpLifeService extends Service {
 	}
 
 	public int getExerciseImageId() {
-		//return ExerciseRecommender.getRandomExerciseId();
+		// return ExerciseRecommender.getRandomExerciseId();
 		return ExerciseRecommender.getRandomExerciseAnimId();
 	}
 
@@ -703,9 +712,11 @@ public class StepUpLifeService extends Service {
 			return;
 		}
 		startMonitoringActivity();
-		// startTimer(EXERCISE_TIMEOUT_INTENT_STRING);
-		// Log.d(LOGTAG, "monitoring is off, will resume after "
-		// + EXERCISE_TIMEOUT_MIN + " minutes");
+		if (StepUpLifeUtils.DISABLE_EXERCISE_TIMEOUT == false) {
+			startTimer(EXERCISE_TIMEOUT_INTENT_STRING);
+			Log.d(LOGTAG, "monitoring is off, will resume after "
+					+ EXERCISE_TIMEOUT_MIN + " minutes");
+		}
 		StepUpLifeUtils.showToast(this, "Right choice !!!");
 	}
 

@@ -27,6 +27,9 @@ public class StepUpLifeUtils {
 	private static final String STARTED_EVENING_MSG = "Having a great evening ?";
 	private static final String STOPPED_EVENING_MSG = "Having a great evening ?";
 
+	public static final boolean DEBUG = true;
+	public static final boolean DISABLE_EXERCISE_TIMEOUT = true;
+
 	public static void createNotification(Context context, String title,
 			String text) {
 		// Prepare intent which is triggered if the
