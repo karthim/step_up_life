@@ -5,6 +5,8 @@ import hcc.stepuplife.ActivityUtils.REQUEST_TYPE;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+
+import android.app.ActionBar;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -23,12 +25,14 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -208,9 +212,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.home, menu);
-		return true;
+	    // Inflate the menu items for use in the action bar
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.home, menu);
+	    return super.onCreateOptionsMenu(menu);		
 	}
 
 	@Override
@@ -220,6 +225,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, Settings.class);
+	    	startActivity(intent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

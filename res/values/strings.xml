@@ -15,5 +15,6 @@
     <string name="disconnected">Disconnected</string>
     <string name="gmailID">androidflair@gmail.com</string>
     <string name="title_activity_summary">SummaryActivity</string>
+    <string name="title_activity_settings">Settings</string>
 
 </resources>
