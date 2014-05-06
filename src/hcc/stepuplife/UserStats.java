@@ -168,6 +168,7 @@ public class UserStats {
 			break;
 		case 4:
 			mProgressTree = ProgressTree.BIGTREE;
+			break;
 		case 5:
 			mProgressTree = ProgressTree.FINALTREE;
 			mGoalReached = true;
