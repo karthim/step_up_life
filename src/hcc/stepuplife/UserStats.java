@@ -86,6 +86,18 @@ public class UserStats {
 				return UNDEFINED;
 			}
 		}
+
+		public static ExerciseType getExerciseTypeFromAnimId(int imageId) {
+			switch (imageId) {
+			case R.drawable.pushups_anim:
+				return PUSHUPS;
+			case R.drawable.lunges_anim:
+				return LUNGES;
+			default:
+				return UNDEFINED;
+			}
+		}
+
 	}
 
 	private int mpushupsCount = 0;
@@ -267,6 +279,7 @@ public class UserStats {
 					0);
 			todayStats.mpushupsCount = mSettings.getInt(
 					STATS_PUSHUPS_COUNT_KEY, 0);
+			saveActivityStats(context, todayStats);
 			mSettings.edit().putBoolean(TODAY_STATS_AVAILABLE, true).apply();
 		}
 		return todayStats;

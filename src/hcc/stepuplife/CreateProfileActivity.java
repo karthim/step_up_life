@@ -3,6 +3,7 @@ package hcc.stepuplife;
 import hcc.stepuplife.UserProfile.Gender;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "CreateProfileActivity";
 	private boolean mUpdate;
+	private boolean mProfileCreated = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +30,21 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_create_profile);
 		
 		LinearLayout layout =(LinearLayout)findViewById(R.id.LinearLytUserProfile);
-		layout.setBackgroundResource(R.drawable.commonbgd);
+		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 		
 		mUpdate = getIntent().getBooleanExtra("update", false);
 
 	}
+	
+	public void finish() {
+		  // Prepare data intent 
+		  Intent data = new Intent();
+		  if(mProfileCreated = true)
+			  setResult(RESULT_OK, data);
+		  else
+			  setResult(RESULT_CANCELED, data);
+		  super.finish();
+		} 
 
 	protected void onResume() {
 		super.onResume();
@@ -169,6 +181,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 					Log.d(LOGTAG, "User Profile created");
 					StepUpLifeUtils
 							.showToast(this, "Your profile is saved !!!");
+					mProfileCreated  = true;
 				} else
 					Log.d(LOGTAG, "User Profile exists?");
 			}

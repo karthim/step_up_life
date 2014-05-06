@@ -1,5 +1,8 @@
 package hcc.stepuplife;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +14,14 @@ import android.widget.Toast;
 
 public class StepUpLifeUtils {
 	private static final String LOGTAG = "hcc.stepuplife.utils";
+	private static final int EVENING_THRESHOLD_PM = 18;
+	private static final int NOON_PM = 12;
+	private static final int MORNING_THRESHOLD = 6;
+	private static final String GOOD_MORNING_MSG = "Good Morning ! Ready to start ?";
+	private static final String GOOD_AFTERNOON_MSG = "How is the afternoon going ?";
+	private static final String GOOD_EVENING_MSG = "Having a great evening ?";
+	private static final int SLEEP_THRESHOLD_PM = 21;
+	private static final String SLEEP_MSG = "Time to sleep, buddy !";
 
 	public static void createNotification(Context context, String title,
 			String text) {
@@ -57,7 +68,38 @@ public class StepUpLifeUtils {
 		notificationManager.cancelAll();
 	}
 
-	//Service sends notification to notify user that goal has been reached
+	public static int getBgImage() {
+		Calendar rightNow = Calendar.getInstance();
+		rightNow.setTimeZone(TimeZone.getDefault());
+		int hourOfday = rightNow.get(Calendar.HOUR_OF_DAY);
+
+		if (hourOfday < NOON_PM && hourOfday >= MORNING_THRESHOLD) {
+			return R.drawable.sunrise;
+		} else if (hourOfday >= NOON_PM && hourOfday <= EVENING_THRESHOLD_PM) {
+			return R.drawable.afternoon;
+		} else {
+			return R.drawable.evening;
+		}
+	}
+
+	public static String getGreetingText() {
+		Calendar rightNow = Calendar.getInstance();
+		rightNow.setTimeZone(TimeZone.getDefault());
+		int hourOfday = rightNow.get(Calendar.HOUR_OF_DAY);
+
+		if (hourOfday < NOON_PM && hourOfday >= MORNING_THRESHOLD) {
+			return GOOD_MORNING_MSG;
+		} else if (hourOfday >= NOON_PM && hourOfday <= EVENING_THRESHOLD_PM) {
+			return GOOD_AFTERNOON_MSG;
+		} else if (hourOfday >= EVENING_THRESHOLD_PM
+				&& hourOfday <= SLEEP_THRESHOLD_PM) {
+			return GOOD_EVENING_MSG;
+		} else
+			return SLEEP_MSG;
+
+	}
+
+	// Service sends notification to notify user that goal has been reached
 	public static void createSummaryNotification(Context context) {
 		// TODO Auto-generated method stub
 		Log.d(LOGTAG, "createSummaryNotification() entered");
@@ -67,10 +109,10 @@ public class StepUpLifeUtils {
 				Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		// Build notification
-		
-		
+
 		Notification noti = new Notification.Builder(context)
-				.setContentTitle("Step Up Life").setContentText("You have reached your goal !!!")
+				.setContentTitle("Step Up Life")
+				.setContentText("You have reached your goal !!!")
 				.setSmallIcon(R.drawable.tinylogo).setContentIntent(pIntent)
 				.build();
 
@@ -88,7 +130,7 @@ public class StepUpLifeUtils {
 
 		notificationManager.cancelAll();
 		notificationManager.notify(0, noti);
-		
+
 	}
 
 }

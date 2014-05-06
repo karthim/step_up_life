@@ -58,6 +58,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	private static final int NOON_PM = 12;
 
 	public static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
+	private static final int MORNING_THRESHOLD = 6;
+	private static final int REQUEST_CODE = 0;
 
 	private void updateTextView(boolean profileNotCreated) {
 
@@ -66,17 +68,8 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			greetText.setText(CREATE_PROFILE_MSG);
 			return;
 		}
-		Calendar rightNow = Calendar.getInstance();
-		rightNow.setTimeZone(TimeZone.getDefault());
-		int hourOfday = rightNow.get(Calendar.HOUR_OF_DAY);
 
-		if (hourOfday < NOON_PM) {
-			greetText.setText(GOOD_MORNING_MSG);
-		} else if (hourOfday >= NOON_PM && hourOfday <= EVENING_THRESHOLD_PM) {
-			greetText.setText(GOOD_AFTERNOON_MSG);
-		} else if (hourOfday >= EVENING_THRESHOLD_PM) {
-			greetText.setText(GOOD_EVENING_MSG);
-		}
+		greetText.setText(StepUpLifeUtils.getGreetingText());
 
 	}
 
@@ -137,7 +130,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLayout1);
-		layout.setBackgroundResource(R.drawable.nice_cloud);
+		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 
 		getWindow().setFormat(PixelFormat.RGBA_8888);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
@@ -231,7 +224,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		// container view.
 		getFragmentManager()
 				.beginTransaction()
-				.replace(R.id.container,
+				.replace(R.id.summaryFrameLayout,
 						PlaceholderFragment.newInstance(position + 1)).commit();
 		return true;
 	}
@@ -328,12 +321,23 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				// onStopUpdates(v);
 			} else if (toStart.compareTo(CREATE_PROFILE_TEXT) == 0) {
 				Intent intent = new Intent(this, CreateProfileActivity.class);
-				startActivity(intent);
+				// startActivity(intent);
+				startActivityForResult(intent, REQUEST_CODE);
 			}
 			break;
 		default:
 			break;
 		}
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_CODE) {
+			if (resultCode == RESULT_OK)
+				updateTextView(true);
+			else
+				updateTextView(false);
+		}
+
 	}
 
 	/**
