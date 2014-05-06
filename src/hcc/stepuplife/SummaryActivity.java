@@ -2,12 +2,8 @@ package hcc.stepuplife;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,7 +13,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class SummaryActivity extends Activity implements OnClickListener {
@@ -43,6 +41,8 @@ public class SummaryActivity extends Activity implements OnClickListener {
 		// Button b = ((Button) findViewById(buttonId));
 		// b.setOnClickListener(this);
 		// }
+		FrameLayout layout = (FrameLayout) findViewById(R.id.summaryFrameLayout);
+		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 		mLaunchedFromService = getIntent()
 				.getBooleanExtra("fromService", false);
 
@@ -87,8 +87,6 @@ public class SummaryActivity extends Activity implements OnClickListener {
 				t.setText(DOING_GREAT_MSG);
 		}
 	}
-	
-	
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)

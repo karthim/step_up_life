@@ -60,7 +60,7 @@ public class UserProfile {
 			Log.d(LOGTAG, "Call init with Context param first");
 			throw new UserProfileNotFoundException();
 		}
-		settings.edit().putString(USER_NAME_SETTING, userName).commit();
+		settings.edit().putString(USER_NAME_SETTING, userName.trim()).commit();
 	}
 
 	public static void setAge(int age) throws UserProfileNotFoundException {
@@ -77,7 +77,7 @@ public class UserProfile {
 			Log.d(LOGTAG, "Call init with Context param first");
 			throw new UserProfileNotFoundException();
 		}
-		settings.edit().putString(USER_GMAIL_SETTING, gmailId).commit();
+		settings.edit().putString(USER_GMAIL_SETTING, gmailId.trim()).commit();
 	}
 
 	public static void setGender(Gender gender)
@@ -103,12 +103,12 @@ public class UserProfile {
 			return false;
 		}
 
-		settings.edit().putString(USER_NAME_SETTING, name).commit();
+		settings.edit().putString(USER_NAME_SETTING, name.trim()).commit();
 		settings.edit().putInt(USER_AGE_SETTING, age).commit();
 		settings.edit()
 				.putBoolean(USER_GENDER_SETTING,
 						(gender == Gender.MALE ? true : false)).commit();
-		settings.edit().putString(USER_GMAIL_SETTING, gmailid).commit();
+		settings.edit().putString(USER_GMAIL_SETTING, gmailid.trim()).commit();
 
 		isUserProfileCreated = true;
 

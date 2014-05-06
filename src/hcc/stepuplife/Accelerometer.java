@@ -20,7 +20,7 @@ public class Accelerometer extends Activity {
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
+					.add(R.id.summaryFrameLayout, new PlaceholderFragment()).commit();
 		}
 	}
 

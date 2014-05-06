@@ -459,7 +459,7 @@ public class StepUpLifeService extends Service {
 		mPrefs = getApplicationContext().getSharedPreferences(
 				ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-		mBroadcastManager = LocalBroadcastManager.getInstance(this);
+		//mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
 		// Create a new Intent filter for the broadcast receiver
 		mBroadcastFilter = new IntentFilter(Home.SNOOZE);
@@ -688,13 +688,14 @@ public class StepUpLifeService extends Service {
 	}
 
 	public int getExerciseImageId() {
-		return ExerciseRecommender.getRandomExerciseId();
+		//return ExerciseRecommender.getRandomExerciseId();
+		return ExerciseRecommender.getRandomExerciseAnimId();
 	}
 
 	public void doExercise(int id) {
-		if (UserStats.ExerciseType.getExerciseTypeFromImageId(id) == UserStats.ExerciseType.LUNGES)
+		if (UserStats.ExerciseType.getExerciseTypeFromAnimId(id) == UserStats.ExerciseType.LUNGES)
 			mStats.incrementLungesCount();
-		if (UserStats.ExerciseType.getExerciseTypeFromImageId(id) == UserStats.ExerciseType.PUSHUPS)
+		if (UserStats.ExerciseType.getExerciseTypeFromAnimId(id) == UserStats.ExerciseType.PUSHUPS)
 			mStats.incrementPushupsCount();
 
 		if (mStats.isGoalReached()) {

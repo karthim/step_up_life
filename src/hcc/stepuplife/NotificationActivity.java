@@ -31,10 +31,11 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_notification);
 		LinearLayout layout = (LinearLayout) findViewById(R.id.notificationllayout);
-		layout.setBackgroundResource(R.drawable.commonbgd);
+		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 
 		mStats = UserStats.loadActivityStats(this);
 		if (mStats == null) {
+			Log.d(LOGTAG,"mStats is null");
 			mStats = new UserStats();
 		}
 		Intent startIntent = new Intent(NotificationActivity.this,
@@ -79,18 +80,21 @@ public class NotificationActivity extends Activity implements OnClickListener {
 				Log.d(LOGTAG, "stepUpLifeService is null inside mConnection !");
 				// Dunno whats going on here, temporary fix
 			}
-			ImageView exerciseImage = (ImageView) findViewById(R.id.imageView1);
+			// ImageView exerciseImage = (ImageView)
+			// findViewById(R.id.imageView1);
+			GifMovieView animView = (GifMovieView) findViewById(R.id.animView);
 			ImageView treeStageImage = (ImageView) findViewById(R.id.oakTreeStageImageView);
-			if (exerciseImage == null || treeStageImage == null) {
-				Log.d(LOGTAG, "exerciseImage and treeStageImage are null");
+			if (animView == null || treeStageImage == null) {
+				Log.d(LOGTAG, "animView and treeStageImage are null");
 			} else {
 
 				int imageId = stepUpLifeService.getExerciseImageId();
 				NotificationActivity.this.mExerciseImageId = imageId;
-				exerciseImage.setImageResource(imageId);
+				// exerciseImage.setImageResource(imageId);
+				animView.setMovieResource(imageId);
 
 				String exerciseString = UserStats.ExerciseType
-						.getExerciseTypeFromImageId(imageId).toString();
+						.getExerciseTypeFromAnimId(imageId).toString();
 				TextView t = (TextView) findViewById(R.id.exerciseTypeTextMsg);
 				t.setText("Time for " + exerciseString);
 
