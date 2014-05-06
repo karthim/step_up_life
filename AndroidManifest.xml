@@ -27,15 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="hcc.stepuplife.Accelerometer"
-            android:label="@string/title_activity_accelerometer" >
-        </activity>
-        <activity
-            android:name="hcc.stepuplife.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name="hcc.stepuplife.CreateProfileActivity"
             android:label="@string/title_activity_create_profile"
             android:screenOrientation="portrait" >
@@ -45,9 +36,6 @@
             android:label="@string/title_activity_reminder"
             android:screenOrientation="portrait" >
         </activity>
-
-        <service android:name="hcc.stepuplife.StepUpLifeIntentService" >
-        </service>
 
         <meta-data
             android:name="com.google.android.gms.version"

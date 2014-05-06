@@ -3,6 +3,8 @@ package hcc.stepuplife;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,11 +27,20 @@ public class Settings extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
+		int idleTime = 0 ;
+		int snoozeTime = 0 ;
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.settingRootLayout);
 		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 
 		settings = getSharedPreferences(PREFS_NAME, 0);
+		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
+		settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, idleTime);
+		editTextidletime.setText(String.valueOf(idleTime));
+		
+		EditText editTextsnooze = (EditText) findViewById(R.id.editTextsnooze);
+		settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, snoozeTime);
+		editTextsnooze.setText(String.valueOf(snoozeTime));
 	}
 
 	@Override
@@ -68,19 +79,21 @@ public class Settings extends Activity {
 			return rootView;
 		}
 	}
+    public void updateSharedPref(View view) {
+    	
+    	EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
+    	int idletime = Integer.parseInt(editTextidletime.getText().toString()); 
 
-	public void updateSharedPref(View view) {
+    	EditText editTextsnoozetime = (EditText) findViewById(R.id.editTextsnooze);
+    	int snoozetime = Integer.parseInt(editTextsnoozetime.getText().toString());   	
+    	
+    	settings.edit().putInt(IDLE_TIME, idletime).commit();
+    	settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
+    	Intent intentSettingsUpdate = new Intent(StepUpLifeService.UPDATE_SETTINGS);
+    	sendBroadcast(intentSettingsUpdate);
+    	
+    }
 
-		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
-		int idletime = Integer.parseInt(editTextidletime.getText().toString());
-
-		EditText editTextsnoozetime = (EditText) findViewById(R.id.editTextsnooze);
-		int snoozetime = Integer.parseInt(editTextsnoozetime.getText()
-				.toString());
-
-		settings.edit().putInt(IDLE_TIME, idletime).commit();
-		settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
-
-	}
+	
 
 }

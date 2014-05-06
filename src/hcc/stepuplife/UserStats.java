@@ -24,7 +24,7 @@ public class UserStats {
 			case FINALTREE:
 				return R.drawable.oak_tree_6;
 			default:
-				return R.drawable.stepuplife;
+				return R.drawable.oak_tree_1;
 			}
 
 		}
@@ -44,7 +44,7 @@ public class UserStats {
 			case FINALTREE:
 				return R.drawable.oakallstage6_transparent;
 			default:
-				return R.drawable.stepuplife;
+				return R.drawable.oakallstage1_transparent;
 			}
 
 		}
@@ -54,16 +54,16 @@ public class UserStats {
 	public enum ExerciseType {
 		PUSHUPS, LUNGES, UNDEFINED;
 
-		public static int getExerciseImageId(ExerciseType ex) {
-			switch (ex) {
-			case PUSHUPS:
-				return R.drawable.exercise1;
-			case LUNGES:
-				return R.drawable.exercise2;
-			default:
-				return R.drawable.exercise3;
-			}
-		}
+//		public static int getExerciseImageId(ExerciseType ex) {
+//			switch (ex) {
+//			case PUSHUPS:
+//				return R.drawable.exercise1;
+//			case LUNGES:
+//				return R.drawable.exercise2;
+//			default:
+//				return R.drawable.exercise3;
+//			}
+//		}
 
 		public String toString() {
 			switch (this) {
@@ -76,16 +76,16 @@ public class UserStats {
 			}
 		}
 
-		public static ExerciseType getExerciseTypeFromImageId(int imageId) {
-			switch (imageId) {
-			case R.drawable.exercise1:
-				return PUSHUPS;
-			case R.drawable.exercise2:
-				return LUNGES;
-			default:
-				return UNDEFINED;
-			}
-		}
+//		public static ExerciseType getExerciseTypeFromImageId(int imageId) {
+//			switch (imageId) {
+//			case R.drawable.exercise1:
+//				return PUSHUPS;
+//			case R.drawable.exercise2:
+//				return LUNGES;
+//			default:
+//				return UNDEFINED;
+//			}
+//		}
 
 		public static ExerciseType getExerciseTypeFromAnimId(int imageId) {
 			switch (imageId) {

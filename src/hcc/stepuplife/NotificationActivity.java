@@ -69,7 +69,7 @@ public class NotificationActivity extends Activity implements OnClickListener {
 
 	private StepUpLifeService stepUpLifeService;
 
-	protected int mExerciseImageId = R.drawable.exercise1;
+	protected int mExerciseImageId = R.drawable.pushups_anim;
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override

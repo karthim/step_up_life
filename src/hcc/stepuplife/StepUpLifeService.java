@@ -37,6 +37,8 @@ public class StepUpLifeService extends Service {
 	static int stillactivityCount = 0;
 	static int cancelCounter = 0;
 	private int activityIntentCount = 0;
+	private static int idleTime = 45; // 45 minutes
+	private static int idleTimeNotifications = idleTime * 6;
 
 	private int exerciseCount;
 	private int target = 10;
@@ -48,6 +50,7 @@ public class StepUpLifeService extends Service {
 	private REQUEST_TYPE mRequestType;
 
 	public static final String ACTIVITY_GOT_INTENT_STRING = "hcc.stepuplife.gotactivity";
+	public static final String UPDATE_SETTINGS = "hcc.steplife.updatesettings";
 
 	// Formats the timestamp in the log
 	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSZ";
@@ -57,15 +60,16 @@ public class StepUpLifeService extends Service {
 	private static final String SNOOZE_WAKEUP_INTENT_STRING = "hcc.stepuplife.snooze_wakeup";
 
 	private static final long MILLISECS_PER_MIN = 60 * 1000;
-	private static long SNOOZE_MIN = 1;
+	private static int SNOOZE_MIN = 1;
+//	private static int msnoozemin = 1;
 	private static long IDLE_TIMEOUT_MIN = 1;
-	private static final long SNOOZE_TIMEOUT_MILLISECS = SNOOZE_MIN
+	private static long SNOOZE_TIMEOUT_MILLISECS = SNOOZE_MIN
 			* MILLISECS_PER_MIN;
 	private static final String EXERCISE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.exercise_timeout";
 	private static long EXERCISE_TIMEOUT_MIN = 1;
 	private static final long EXERCISE_TIMEOUT_MILLISECS = EXERCISE_TIMEOUT_MIN
 			* MILLISECS_PER_MIN;
-	private static final long IDLE_TIMEOUT_MILLISECS = IDLE_TIMEOUT_MIN
+	private static long IDLE_TIMEOUT_MILLISECS = IDLE_TIMEOUT_MIN
 			* MILLISECS_PER_MIN;
 	private static final String IDLE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.idle_timeout";
 	private static final String CALENDAR_EVENT_ON = "isCalendarEventOn";
@@ -206,9 +210,22 @@ public class StepUpLifeService extends Service {
 					// }
 
 				}
+			} else if (intent.getAction().equals(UPDATE_SETTINGS)) {
+				// notifyUser();
+				Log.i(LOGTAG, "Update Settings");
+				updateSettings();
 			}
 		}
 	};
+
+	public void updateSettings() {
+		IDLE_TIMEOUT_MIN = settings.getInt(hcc.stepuplife.Settings.IDLE_TIME,
+				(int) IDLE_TIMEOUT_MIN);
+		idleTimeNotifications = (int) (idleTime * 6); // 1 update in 10 secs so
+														// 6 updates per minute
+		SNOOZE_MIN = settings.getInt(hcc.stepuplife.Settings.SNOOZE_TIME,
+				SNOOZE_MIN); // Should use msnoozemin
+	}
 
 	private boolean isUserMoving() {
 		// TODO Auto-generated method stub
@@ -299,7 +316,7 @@ public class StepUpLifeService extends Service {
 
 		} else if (intentString.equals(SNOOZE_WAKEUP_INTENT_STRING)) {
 			if (snoozeWakeupPendingIntent != null)
-				stopTimer(IDLE_TIMEOUT_INTENT_STRING);
+				stopTimer(SNOOZE_WAKEUP_INTENT_STRING);
 			Calendar calendar = Calendar.getInstance();
 
 			long timeToWakeup;
@@ -307,7 +324,7 @@ public class StepUpLifeService extends Service {
 				timeToWakeup = calendar.getTimeInMillis() + duration;
 			} else
 				timeToWakeup = calendar.getTimeInMillis()
-						+ IDLE_TIMEOUT_MILLISECS;
+						+ SNOOZE_TIMEOUT_MILLISECS;
 
 			Intent idleTimerIntent = new Intent(SNOOZE_WAKEUP_INTENT_STRING);
 			snoozeWakeupPendingIntent = PendingIntent.getBroadcast(this, 0,
@@ -325,7 +342,7 @@ public class StepUpLifeService extends Service {
 				timeToWakeup = calendar.getTimeInMillis() + duration;
 			} else
 				timeToWakeup = calendar.getTimeInMillis()
-						+ IDLE_TIMEOUT_MILLISECS;
+						+ EXERCISE_TIMEOUT_MILLISECS;
 
 			Intent idleTimerIntent = new Intent(EXERCISE_TIMEOUT_INTENT_STRING);
 			exerciseTimeoutPendingIntent = PendingIntent.getBroadcast(this, 0,

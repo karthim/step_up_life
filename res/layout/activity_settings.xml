@@ -96,15 +96,16 @@
         android:layout_height="wrap_content" >
     </LinearLayout>
 
-    <Button
+    <ImageButton
         android:id="@+id/button1"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_gravity="center"
-        android:gravity="center"
         android:layout_marginTop="30dp"
-        android:background="@drawable/blue"
+        android:background="@drawable/green"
+        android:gravity="center"
         android:onClick="updateSharedPref"
-        android:text="Update" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/tick_icon" />
 
 </LinearLayout>
