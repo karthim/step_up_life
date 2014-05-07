@@ -204,18 +204,23 @@ public class UserStats {
 		switch (isBetween(targetPerCent)) {
 		case 0:
 			mProgressTree = ProgressTree.SAPLING;
+			mGoalReached = false;
 			break;
 		case 1:
 			mProgressTree = ProgressTree.BUSH;
+			mGoalReached = false;
 			break;
 		case 2:
 			mProgressTree = ProgressTree.PLANT;
+			mGoalReached = false;
 			break;
 		case 3:
 			mProgressTree = ProgressTree.TREE;
+			mGoalReached = false;
 			break;
 		case 4:
 			mProgressTree = ProgressTree.BIGTREE;
+			mGoalReached = false;
 			break;
 		case 5:
 			mProgressTree = ProgressTree.FINALTREE;
