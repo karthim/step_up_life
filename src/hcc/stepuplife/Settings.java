@@ -35,11 +35,11 @@ public class Settings extends Activity {
 
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
-		settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, idleTime);
+		idleTime = settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, StepUpLifeService.IDLE_TIMEOUT_MIN);
 		editTextidletime.setText(String.valueOf(idleTime));
 		
 		EditText editTextsnooze = (EditText) findViewById(R.id.editTextsnooze);
-		settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, snoozeTime);
+		snoozeTime = settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, StepUpLifeService.SNOOZE_MIN);
 		editTextsnooze.setText(String.valueOf(snoozeTime));
 	}
 

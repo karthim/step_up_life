@@ -60,9 +60,9 @@ public class StepUpLifeService extends Service {
 	private static final String SNOOZE_WAKEUP_INTENT_STRING = "hcc.stepuplife.snooze_wakeup";
 
 	private static final long MILLISECS_PER_MIN = 60 * 1000;
-	private static int SNOOZE_MIN = 1;
+	public static int SNOOZE_MIN = 1;
 	// private static int msnoozemin = 1;
-	private static long IDLE_TIMEOUT_MIN = 1;
+	public static long IDLE_TIMEOUT_MIN = 1;
 	private static long SNOOZE_TIMEOUT_MILLISECS = SNOOZE_MIN
 			* MILLISECS_PER_MIN;
 	private static final String EXERCISE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.exercise_timeout";
