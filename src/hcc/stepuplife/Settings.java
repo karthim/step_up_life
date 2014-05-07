@@ -7,13 +7,17 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.os.Build;
 
 public class Settings extends Activity {
@@ -38,13 +42,27 @@ public class Settings extends Activity {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.settingRootLayout);
 		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 		settings = getSharedPreferences(PREFS_NAME, 0);
+
+		EditText editTextTargetCal = (EditText) findViewById(R.id.editTextTargetCal);
+		editTextTargetCal
+				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+					public boolean onEditorAction(TextView exampleView,
+							int actionId, KeyEvent event) {
+						if (actionId == EditorInfo.IME_NULL
+								&& event.getAction() == KeyEvent.FLAG_EDITOR_ACTION) {
+							ImageButton b = ((ImageButton) findViewById(R.id.buttonSetting));
+							b.performClick();
+						}
+						return true;
+					}
+				});
 	}
 
 	protected void onResume() {
 
 		int idleTime = 0;
 		int snoozeTime = 0;
-		
+
 		mStats = UserStats.loadActivityStats(this);
 		if (mStats == null) {
 			mStats = new UserStats();
@@ -123,11 +141,12 @@ public class Settings extends Activity {
 		settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
 		settings.edit().putInt(TARGET_CALORIES_KEY, targetCal).commit();
 		mStats.refresh();
-		
+
 		Intent intentSettingsUpdate = new Intent(
 				StepUpLifeService.UPDATE_SETTINGS);
 		intentSettingsUpdate.putExtra("doNotRestart", true);
 		sendBroadcast(intentSettingsUpdate);
+		StepUpLifeUtils.showToast(this, "Settings updated...");
 		finish();
 
 	}
