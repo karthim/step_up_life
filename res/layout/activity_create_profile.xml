@@ -49,6 +49,7 @@
             android:background="@drawable/lblue"
             android:gravity="center_horizontal"
             android:hint="John Smith"
+            android:inputType="textPersonName"
             android:paddingLeft="10dp" >
 
             <requestFocus />
@@ -81,7 +82,7 @@
             android:background="@drawable/lblue"
             android:gravity="center_horizontal"
             android:hint="25"
-            android:inputType="numberSigned" />
+            android:inputType="number" />
     </LinearLayout>
 
     <LinearLayout
@@ -148,7 +149,9 @@
             android:layout_height="wrap_content"
             android:background="@drawable/lblue"
             android:gravity="center_horizontal"
-            android:hint="example@gmail.com" >
+            android:hint="example@gmail.com"
+            android:inputType="textEmailAddress" >
+
         </EditText>
     </LinearLayout>
 

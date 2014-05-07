@@ -57,6 +57,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
+            
+            <TextView
+            android:id="@+id/exerciseTypeTextMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/yellow"
+            android:gravity="center_horizontal|center"
+            android:text="Click the image above for summary !"
+            android:textSize="15dp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

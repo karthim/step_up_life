@@ -1,11 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="hcc.stepuplife.SummaryActivity" >
+    tools:context="hcc.stepuplife.Home" >
 
     <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/settings_icon"
         android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:showAsAction="always"/>
+    <item
+        android:id="@+id/action_stats"
+        android:icon="@drawable/stats_icon"
+        android:orderInCategory="100"
+        android:showAsAction="always">
+    </item>
 
 </menu>

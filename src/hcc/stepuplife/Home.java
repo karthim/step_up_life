@@ -62,6 +62,9 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	public static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
 	private static final int MORNING_THRESHOLD = 6;
 	private static final int REQUEST_CODE = 0;
+	private boolean mProfileCreated = false;
+
+	private ImageButton mButton;
 
 	private void updateTextView(boolean profileNotCreated, boolean isStarted) {
 
@@ -70,8 +73,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			greetText.setText(CREATE_PROFILE_MSG);
 			return;
 		}
-
-		greetText.setText(StepUpLifeUtils.getGreetingText(isStarted));
+		if (isStarted)
+			greetText.setText("\"Press Stop to stop monitoring activity\"");
+		else
+			greetText.setText("\"Press Start to start monitoring activity\"");
 
 	}
 
@@ -114,8 +119,16 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(STOP_HOME_ACTIVITY_INTENT))
+			if (intent.getAction().equals(STOP_HOME_ACTIVITY_INTENT)) {
 				finish();
+			} else if (intent.getAction().equals(
+					StepUpLifeService.SERVICE_SHUTDOWN)) {
+				if (Home.this.mButton != null) {
+					Home.this.updateTextView(false, false);
+					Home.this.mButton.setBackgroundResource(R.drawable.green);
+					Home.this.mButton.setImageResource(R.drawable.start_icon);
+				}
+			}
 		}
 	};
 
@@ -140,6 +153,9 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		IntentFilter iFilter = new IntentFilter(STOP_HOME_ACTIVITY_INTENT);
 		registerReceiver(homeReceiver, iFilter);
+		iFilter = new IntentFilter(StepUpLifeService.SERVICE_SHUTDOWN);
+		registerReceiver(homeReceiver, iFilter);
+		mButton = ((ImageButton) findViewById(R.id.buttonStart));
 
 	}
 
@@ -155,7 +171,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 		else
 			Log.d("INFO", "Button start is not null");
 		if (UserProfile.isUserProfileCreated(this)) {
-
+			mProfileCreated = true;
 			Log.d("INFO", "User profile exists");
 			// @TODO: Change this; call bindService in onCreate and call
 			// isRunning
@@ -164,19 +180,19 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				// button should display start
 				Log.d("INFO", "Service running");
 				b.setTag(STOP_TEXT);
-				b.setImageResource(R.drawable.stop);
+				b.setImageResource(R.drawable.stop_icon);
 				b.setBackgroundResource(R.drawable.red);
 			} else {
 				// button should display stop
 				Log.d("INFO", "Service not running");
-				updateTextView(false, true);
+				updateTextView(false, false);
 				b.setTag(START_TEXT);
-				b.setImageResource(R.drawable.play);
+				b.setImageResource(R.drawable.start_icon);
 				b.setBackgroundResource(R.drawable.green);
 			}
 		} else {
 			UserProfile.init(this);
-			updateTextView(true, false);
+			updateTextView(true, true);
 			Log.d("INFO", "User profile not created");
 			b.setImageResource(R.drawable.create_profile_icon);
 			b.setTag(CREATE_PROFILE_TEXT);
@@ -224,10 +240,20 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			Intent intent = new Intent(this, Settings.class);
 			startActivity(intent);
 			return true;
-		}
-		else if(id == R.id.action_profile)
-		{
-			Intent intent = new Intent(this, CreateProfileActivity.class);
+		} else if (id == R.id.action_profile) {
+			if (mProfileCreated) {
+				Intent intent = new Intent(this, CreateProfileActivity.class);
+				intent.putExtra("update", true);
+				startActivity(intent);
+			} else {
+				Intent intent = new Intent(this, CreateProfileActivity.class);
+				// startActivity(intent);
+				startActivityForResult(intent, REQUEST_CODE);
+			}
+			return true;
+		} else if (id == R.id.action_stats) {
+			Intent intent = new Intent(this, SummaryActivity.class);
+			// intent.putExtra("update", true);
 			startActivity(intent);
 			return true;
 		}
@@ -308,34 +334,34 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 	// }
 	// }
 
-//	class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
-//	    private final WeakReference<ImageView> imageViewReference;
-//	    private int data = 0;
-//
-//	    public BitmapWorkerTask(ImageView imageView) {
-//	        // Use a WeakReference to ensure the ImageView can be garbage collected
-//	        imageViewReference = new WeakReference<ImageView>(imageView);
-//	    }
-//
-//	    // Decode image in background.
-//	    @Override
-//	    protected Bitmap doInBackground(Integer... params) {
-//	        data = params[0];
-//	        return decodeSampledBitmapFromResource(getResources(), data, 100, 100));
-//	    }
-//
-//	    // Once complete, see if ImageView is still around and set bitmap.
-//	    @Override
-//	    protected void onPostExecute(Bitmap bitmap) {
-//	        if (imageViewReference != null && bitmap != null) {
-//	            final ImageView imageView = imageViewReference.get();
-//	            if (imageView != null) {
-//	                imageView.setImageBitmap(bitmap);
-//	            }
-//	        }
-//	    }
-//	}
-	
+	// class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+	// private final WeakReference<ImageView> imageViewReference;
+	// private int data = 0;
+	//
+	// public BitmapWorkerTask(ImageView imageView) {
+	// // Use a WeakReference to ensure the ImageView can be garbage collected
+	// imageViewReference = new WeakReference<ImageView>(imageView);
+	// }
+	//
+	// // Decode image in background.
+	// @Override
+	// protected Bitmap doInBackground(Integer... params) {
+	// data = params[0];
+	// return decodeSampledBitmapFromResource(getResources(), data, 100, 100));
+	// }
+	//
+	// // Once complete, see if ImageView is still around and set bitmap.
+	// @Override
+	// protected void onPostExecute(Bitmap bitmap) {
+	// if (imageViewReference != null && bitmap != null) {
+	// final ImageView imageView = imageViewReference.get();
+	// if (imageView != null) {
+	// imageView.setImageBitmap(bitmap);
+	// }
+	// }
+	// }
+	// }
+
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -360,14 +386,18 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 				Log.d("A/Home", "starting service");
 				b.setTag(STOP_TEXT);
 				b.setBackgroundResource(R.drawable.red);
-				b.setImageResource(R.drawable.stop);
+				b.setImageResource(R.drawable.stop_icon);
+				updateTextView(false, true);
 
 			} else if (toStart.compareTo(STOP_TEXT) == 0) {
 				stopService(new Intent(Home.this, StepUpLifeService.class));
 				Log.d("A/Home", "stopping service");
+
+				updateTextView(false, false);
 				b.setTag(START_TEXT);
+
 				b.setBackgroundResource(R.drawable.green);
-				b.setImageResource(R.drawable.play);
+				b.setImageResource(R.drawable.start_icon);
 				// onStopUpdates(v);
 			} else if (toStart.compareTo(CREATE_PROFILE_TEXT) == 0) {
 				Intent intent = new Intent(this, CreateProfileActivity.class);
@@ -382,9 +412,10 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_CODE) {
-			if (resultCode == RESULT_OK)
+			if (resultCode == RESULT_OK) {
 				updateTextView(true, false);
-			else
+				mProfileCreated = true;
+			} else
 				updateTextView(false, false);
 		}
 

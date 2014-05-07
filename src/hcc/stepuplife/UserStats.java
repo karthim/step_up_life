@@ -54,16 +54,16 @@ public class UserStats {
 	public enum ExerciseType {
 		PUSHUPS, LUNGES, UNDEFINED;
 
-//		public static int getExerciseImageId(ExerciseType ex) {
-//			switch (ex) {
-//			case PUSHUPS:
-//				return R.drawable.exercise1;
-//			case LUNGES:
-//				return R.drawable.exercise2;
-//			default:
-//				return R.drawable.exercise3;
-//			}
-//		}
+		// public static int getExerciseImageId(ExerciseType ex) {
+		// switch (ex) {
+		// case PUSHUPS:
+		// return R.drawable.exercise1;
+		// case LUNGES:
+		// return R.drawable.exercise2;
+		// default:
+		// return R.drawable.exercise3;
+		// }
+		// }
 
 		public String toString() {
 			switch (this) {
@@ -76,16 +76,16 @@ public class UserStats {
 			}
 		}
 
-//		public static ExerciseType getExerciseTypeFromImageId(int imageId) {
-//			switch (imageId) {
-//			case R.drawable.exercise1:
-//				return PUSHUPS;
-//			case R.drawable.exercise2:
-//				return LUNGES;
-//			default:
-//				return UNDEFINED;
-//			}
-//		}
+		// public static ExerciseType getExerciseTypeFromImageId(int imageId) {
+		// switch (imageId) {
+		// case R.drawable.exercise1:
+		// return PUSHUPS;
+		// case R.drawable.exercise2:
+		// return LUNGES;
+		// default:
+		// return UNDEFINED;
+		// }
+		// }
 
 		public static ExerciseType getExerciseTypeFromAnimId(int imageId) {
 			switch (imageId) {
@@ -131,7 +131,12 @@ public class UserStats {
 	private static final String STATS_PROGRESS_TREE_KEY = "todayStatsTreeOrdinal";
 	private static final String STATS_CANCELCOUNT_KEY = "todayStatsCancelCount";
 
-	public static final int TARGET_CALORIES_BURNT = 60;
+	public static int TARGET_CALORIES_BURNT = 60;
+
+	public static void updateTargetCaloriesBurnt() {
+		TARGET_CALORIES_BURNT = mSettings.getInt(Settings.TARGET_CALORIES_KEY,
+				TARGET_CALORIES_BURNT);
+	}
 
 	private static final String TODAY_STATS_AVAILABLE = "areTodayStatsAvailable";
 
@@ -229,6 +234,11 @@ public class UserStats {
 
 	public int getCaloriesBurnt() {
 		return mCaloriesBurnt;
+	}
+
+	public void refresh() {
+		updateTargetCaloriesBurnt();
+		updateCaloriesBurnt();
 	}
 
 	public int getCancelCount() {

@@ -21,70 +21,84 @@ public class UserProfile {
 		MALE, FEMALE
 	}
 
-	public static String getUserName() throws UserProfileNotFoundException {
+	public static String getUserName(Context context)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
 		return settings.getString(USER_NAME_SETTING, "");
 	}
 
-	public static int getAge() throws UserProfileNotFoundException {
+	public static int getAge(Context context)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// ////throw new UserProfileNotFoundException();
 		}
-		return settings.getInt(USER_AGE_SETTING, -1);
+		return settings.getInt(USER_AGE_SETTING, 0);
 	}
 
-	public static String getGmailID() throws UserProfileNotFoundException {
+	public static String getGmailID(Context context)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
+
 		return settings.getString(USER_GMAIL_SETTING, "");
 	}
 
-	public static Gender getGender() throws UserProfileNotFoundException {
+	public static Gender getGender(Context context)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
 		return (settings.getBoolean(USER_GENDER_SETTING, false)) ? Gender.MALE
 				: Gender.FEMALE;
 	}
 
-	public static void setUserName(String userName)
+	public static void setUserName(String userName, Context context)
 			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
 		settings.edit().putString(USER_NAME_SETTING, userName.trim()).commit();
 	}
 
-	public static void setAge(int age) throws UserProfileNotFoundException {
+	public static void setAge(int age, Context context)
+			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
 		settings.edit().putInt(USER_AGE_SETTING, age).commit();
 	}
 
-	public static void setGmailID(String gmailId)
+	public static void setGmailID(String gmailId, Context context)
 			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
 		settings.edit().putString(USER_GMAIL_SETTING, gmailId.trim()).commit();
 	}
 
-	public static void setGender(Gender gender)
+	public static void setGender(Gender gender, Context context)
 			throws UserProfileNotFoundException {
 		if (settings == null) {
 			Log.d(LOGTAG, "Call init with Context param first");
-			throw new UserProfileNotFoundException();
+			init(context);
+			// throw new UserProfileNotFoundException();
 		}
 		settings.edit()
 				.putBoolean(USER_GENDER_SETTING,
@@ -116,21 +130,21 @@ public class UserProfile {
 	}
 
 	public static boolean updateProfile(String name, int age, String gmailid,
-			Gender gender) throws UserProfileNotFoundException {
+			Gender gender, Context context) throws UserProfileNotFoundException {
 		if (!isUserProfileCreated) {
 			Log.d(LOGTAG, "User profile does not exist, use getProfile");
 			return false;
 		}
 
 		if (name != null) {
-			setUserName(name);
+			setUserName(name, context);
 		}
 		if (age != -1)
-			setAge(age);
+			setAge(age, context);
 		if (gmailid != null)
-			setGmailID(gmailid);
+			setGmailID(gmailid, context);
 		if (gender != null)
-			setGender(gender);
+			setGender(gender, context);
 
 		return true;
 	}

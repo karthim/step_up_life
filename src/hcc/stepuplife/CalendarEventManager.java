@@ -82,7 +82,7 @@ public class CalendarEventManager {
 
 		String userGmailID;
 		try {
-			userGmailID = UserProfile.getGmailID();
+			userGmailID = UserProfile.getGmailID(context);
 		} catch (UserProfileNotFoundException e) {
 			// TODO Auto-generated catch block
 			Log.d(LOGTAG, "user profile does not exist!!!");
@@ -185,7 +185,7 @@ public class CalendarEventManager {
 
 		String userGmailID;
 		try {
-			userGmailID = UserProfile.getGmailID();
+			userGmailID = UserProfile.getGmailID(context);
 		} catch (UserProfileNotFoundException e) {
 			// TODO Auto-generated catch block
 			Log.d(LOGTAG, "user profile does not exist!!!");

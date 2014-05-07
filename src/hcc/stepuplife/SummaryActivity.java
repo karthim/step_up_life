@@ -32,7 +32,8 @@ public class SummaryActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_summary);
-
+		getActionBar().setDisplayShowHomeEnabled(true);
+		getActionBar().setTitle(R.string.app_name);
 		// Intent startIntent = new Intent(SummaryActivity.this,
 		// StepUpLifeService.class);
 		// bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -52,10 +53,13 @@ public class SummaryActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+
 		mStats = UserStats.loadActivityStats(this);
 		if (mStats == null) {
 			mStats = new UserStats();
 		}
+		mStats.refresh();
+
 		TextView t;
 
 		t = (TextView) findViewById(R.id.calories);
@@ -97,7 +101,9 @@ public class SummaryActivity extends Activity implements OnClickListener {
 	}
 
 	private void doFinish() {
-		if (mLaunchedFromService) {
+		if (mLaunchedFromService
+				|| UserStats.loadActivityStats(this).isGoalReached()) {
+			StepUpLifeUtils.showToast(this, "Step Up Life has shut down");
 			stopService(new Intent(SummaryActivity.this,
 					StepUpLifeService.class));
 			Log.d("A/Home", "stopping service");

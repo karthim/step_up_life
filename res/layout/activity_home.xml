@@ -36,9 +36,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/yellow"
-            android:text="How is the morning going ?"
+            android:text="Press Stop to stop monitoring activity"
             android:textStyle="bold"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:layout_marginBottom="30dp"
              />
 
@@ -49,7 +49,7 @@
             android:layout_gravity="center"
             android:background="@drawable/blue"
             android:scaleType="fitCenter"
-            android:src="@drawable/create_profile_icon" />
+            android:src="@drawable/stop_icon" />
 
     </LinearLayout>
 

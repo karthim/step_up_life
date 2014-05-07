@@ -4,12 +4,19 @@
 
     <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/settings_icon"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_settings"/>
+        android:showAsAction="always"/>
     <item
         android:id="@+id/action_profile"
+        android:icon="@drawable/profile_icon_white"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/action_Profile"/>
+        android:showAsAction="always"/>
+    <item
+        android:id="@+id/action_stats"
+        android:icon="@drawable/stats_icon"
+        android:orderInCategory="100"
+        android:showAsAction="always">
+    </item>
+
 </menu>

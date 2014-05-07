@@ -22,32 +22,59 @@ public class Settings extends Activity {
 	public static final String PREFS_NAME = "stepuplifePrefs";
 	public static final String IDLE_TIME = "idletime";
 	public static final String SNOOZE_TIME = "snoozetime";
+	public static final String TARGET_CALORIES_KEY = "targetcalorieskey";
+
+	private boolean mFromNotifScreen = false;
+	UserStats mStats;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
-		int idleTime = 0 ;
-		int snoozeTime = 0 ;
+
+		getActionBar().setTitle(
+				getResources().getString(R.string.app_name) + " Settings");
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.settingRootLayout);
 		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
-
 		settings = getSharedPreferences(PREFS_NAME, 0);
-		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
-		idleTime = settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, StepUpLifeService.IDLE_TIMEOUT_MIN);
-		editTextidletime.setText(String.valueOf(idleTime));
+	}
+
+	protected void onResume() {
+
+		int idleTime = 0;
+		int snoozeTime = 0;
 		
+		mStats = UserStats.loadActivityStats(this);
+		if (mStats == null) {
+			mStats = new UserStats();
+		}
+		mStats.refresh();
+
+		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
+		idleTime = settings.getInt(IDLE_TIME,
+				StepUpLifeService.IDLE_TIMEOUT_MIN);
+		editTextidletime.setText(String.valueOf(idleTime));
+
 		EditText editTextsnooze = (EditText) findViewById(R.id.editTextsnooze);
-		snoozeTime = settings.getInt(hcc.stepuplife.Settings.IDLE_TIME, StepUpLifeService.SNOOZE_MIN);
+		snoozeTime = settings.getInt(SNOOZE_TIME, StepUpLifeService.SNOOZE_MIN);
 		editTextsnooze.setText(String.valueOf(snoozeTime));
+
+		EditText targetCalories = (EditText) findViewById(R.id.editTextTargetCal);
+		int targetCal = settings.getInt(TARGET_CALORIES_KEY,
+				UserStats.TARGET_CALORIES_BURNT);
+		targetCalories.setText(String.valueOf(targetCal));
+
+		mFromNotifScreen = getIntent().getBooleanExtra(
+				"fromNotificationScreen", false);
+		super.onResume();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.settings, menu);
+		// getMenuInflater().inflate(R.menu.settings, menu);
 		return true;
 	}
 
@@ -79,22 +106,30 @@ public class Settings extends Activity {
 			return rootView;
 		}
 	}
-    public void updateSharedPref(View view) {
-    	
-    	EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
-    	int idletime = Integer.parseInt(editTextidletime.getText().toString()); 
 
-    	EditText editTextsnoozetime = (EditText) findViewById(R.id.editTextsnooze);
-    	int snoozetime = Integer.parseInt(editTextsnoozetime.getText().toString());   	
-    	
-    	settings.edit().putInt(IDLE_TIME, idletime).commit();
-    	settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
-    	Intent intentSettingsUpdate = new Intent(StepUpLifeService.UPDATE_SETTINGS);
-    	sendBroadcast(intentSettingsUpdate);
-    	finish();
-    	
-    }
+	public void updateSharedPref(View view) {
 
-	
+		EditText editTextidletime = (EditText) findViewById(R.id.editTextidle);
+		int idletime = Integer.parseInt(editTextidletime.getText().toString());
+
+		EditText editTextsnoozetime = (EditText) findViewById(R.id.editTextsnooze);
+		int snoozetime = Integer.parseInt(editTextsnoozetime.getText()
+				.toString());
+
+		EditText targetCalories = (EditText) findViewById(R.id.editTextTargetCal);
+		int targetCal = Integer.parseInt(targetCalories.getText().toString());
+
+		settings.edit().putInt(IDLE_TIME, idletime).commit();
+		settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
+		settings.edit().putInt(TARGET_CALORIES_KEY, targetCal).commit();
+		mStats.refresh();
+		
+		Intent intentSettingsUpdate = new Intent(
+				StepUpLifeService.UPDATE_SETTINGS);
+		intentSettingsUpdate.putExtra("doNotRestart", true);
+		sendBroadcast(intentSettingsUpdate);
+		finish();
+
+	}
 
 }

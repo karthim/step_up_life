@@ -6,15 +6,17 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -28,11 +30,26 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_create_profile);
+		getActionBar().setTitle(R.string.app_name);
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLytUserProfile);
 		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
 
 		mUpdate = getIntent().getBooleanExtra("update", false);
+
+		EditText gmailText = (EditText) findViewById(R.id.gmailText);
+		gmailText
+				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+					public boolean onEditorAction(TextView exampleView,
+							int actionId, KeyEvent event) {
+						if (actionId == EditorInfo.IME_NULL
+								&& event.getAction() == KeyEvent.FLAG_EDITOR_ACTION) {
+							ImageButton b = ((ImageButton) findViewById(R.id.buttonCreate));
+							b.performClick();
+						}
+						return true;
+					}
+				});
 
 	}
 
@@ -60,19 +77,24 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 			TextView gmailText = ((TextView) findViewById(R.id.gmailText));
 			TextView ageText = ((TextView) findViewById(R.id.ageText));
 			RadioGroup radioGender = ((RadioGroup) findViewById(R.id.genderRadio));
-			
 
 			try {
-				nameText.setText(UserProfile.getUserName());
-				ageText.setText(UserProfile.getAge());
-				gmailText.setText(UserProfile.getGmailID());
-				if (UserProfile.getGender() == UserProfile.Gender.MALE)
+				nameText.setText(UserProfile.getUserName(this));
+				ageText.setText(String.valueOf(UserProfile.getAge(this)));
+				gmailText.setText(UserProfile.getGmailID(this));
+				if (UserProfile.getGender(this) == UserProfile.Gender.MALE)
 					radioGender.check(R.id.male);
 				else
 					radioGender.check(R.id.female);
 
 			} catch (UserProfileNotFoundException e) {
 				Log.d(LOGTAG, "Did not find user profile");
+				nameText.setText("");
+				ageText.setText(0);
+				gmailText.setText("");
+
+				radioGender.check(R.id.male);
+
 			}
 
 		}
@@ -84,7 +106,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.create_profile, menu);
+		// getMenuInflater().inflate(R.menu.create_profile, menu);
 		return true;
 	}
 
@@ -134,7 +156,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 			try {
 				age = Integer.parseInt(((TextView) findViewById(R.id.ageText))
 						.getText().toString());
-				if (age < 18 && age > 90) {
+				if (age < 18 || age > 90) {
 					StepUpLifeUtils.showToast(this, "Please enter valid age");
 					return;
 				}
@@ -158,7 +180,8 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 
 			if (mUpdate) {
 				try {
-					UserProfile.updateProfile(userName, age, gmailid, gender);
+					UserProfile.updateProfile(userName, age, gmailid, gender,
+							this);
 					StepUpLifeUtils.showToast(this,
 							"Your profile was updated !!!");
 				} catch (UserProfileNotFoundException e) {
@@ -166,7 +189,7 @@ public class CreateProfileActivity extends Activity implements OnClickListener {
 					if (UserProfile.isUserProfileCreated(this)) {
 						try {
 							UserProfile.updateProfile(userName, age, gmailid,
-									gender);
+									gender, this);
 							StepUpLifeUtils.showToast(this,
 									"Your profile was updated !!!");
 						} catch (Exception another) {

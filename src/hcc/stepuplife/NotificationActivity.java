@@ -33,12 +33,8 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_notification);
 		LinearLayout layout = (LinearLayout) findViewById(R.id.notificationllayout);
 		layout.setBackgroundResource(StepUpLifeUtils.getBgImage());
+		getActionBar().setTitle(R.string.app_name);
 
-		mStats = UserStats.loadActivityStats(this);
-		if (mStats == null) {
-			Log.d(LOGTAG, "mStats is null");
-			mStats = new UserStats();
-		}
 		Intent startIntent = new Intent(NotificationActivity.this,
 				StepUpLifeService.class);
 		bindService(startIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -62,6 +58,21 @@ public class NotificationActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		mStats = UserStats.loadActivityStats(this);
+		if (mStats == null) {
+			mStats = new UserStats();
+		}
+		mStats.refresh();
+
+		int imageId = UserStats.ProgressTree.getTreeStageImageId(mStats
+				.getProgressTree());
+		ImageView treeStageImage = (ImageView) findViewById(R.id.oakTreeStageImageView);
+
+		if (treeStageImage != null) {
+			treeStageImage.setImageResource(imageId);
+			treeStageImage.setOnClickListener(NotificationActivity.this);
+		}
+
 		super.onResume();
 	}
 
@@ -84,9 +95,8 @@ public class NotificationActivity extends Activity implements OnClickListener {
 			// ImageView exerciseImage = (ImageView)
 			// findViewById(R.id.imageView1);
 			GifMovieView animView = (GifMovieView) findViewById(R.id.animView);
-			ImageView treeStageImage = (ImageView) findViewById(R.id.oakTreeStageImageView);
 
-			if (animView == null || treeStageImage == null) {
+			if (animView == null) {
 				Log.d(LOGTAG, "animView and treeStageImage are null");
 			} else {
 
@@ -99,11 +109,6 @@ public class NotificationActivity extends Activity implements OnClickListener {
 						.getExerciseTypeFromAnimId(imageId).toString();
 				TextView t = (TextView) findViewById(R.id.exerciseTypeTextMsg);
 				t.setText("Time for " + exerciseString + " !");
-
-				imageId = UserStats.ProgressTree.getTreeStageImageId(mStats
-						.getProgressTree());
-				treeStageImage.setImageResource(imageId);
-				treeStageImage.setOnClickListener(NotificationActivity.this);
 
 			}
 		}
@@ -119,9 +124,9 @@ public class NotificationActivity extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.reminder, menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.reminder, menu);
+		getMenuInflater().inflate(R.menu.reminder, menu);
+		// MenuInflater inflater = getMenuInflater();
+		// inflater.inflate(R.menu.reminder, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -132,6 +137,19 @@ public class NotificationActivity extends Activity implements OnClickListener {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, Settings.class);
+			intent.putExtra("fromNotificationScreen", true);
+			startActivity(intent);
+			return true;
+		} else if (id == R.id.action_profile) {
+			Intent intent = new Intent(this, CreateProfileActivity.class);
+			intent.putExtra("update", true);
+			startActivity(intent);
+			return true;
+		} else if (id == R.id.action_stats) {
+			Intent intent = new Intent(this, SummaryActivity.class);
+			// intent.putExtra("update", true);
+			startActivity(intent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
