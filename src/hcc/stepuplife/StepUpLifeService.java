@@ -234,8 +234,11 @@ public class StepUpLifeService extends Service {
 		Log.d(LOGTAG, "Snooze min is now " + SNOOZE_MIN);// Should use
 															// msnoozemin
 		//
-		if (doNotRestart)
+		if (!isMonitoring()) {
+			Log.d(LOGTAG, "Monitoring off, Updated timeouts but wont restart");
 			return;
+		}
+
 		stopMonitoringActivity(false);
 		startMonitoringActivity(0);
 	}
@@ -453,7 +456,7 @@ public class StepUpLifeService extends Service {
 		}
 	}
 
-	private ServiceState serviceState;
+	private ServiceState serviceState = ServiceState.STOPPED;
 
 	/**
 	 * @return true if service is running, else false
@@ -508,6 +511,7 @@ public class StepUpLifeService extends Service {
 		mPrefs = getApplicationContext().getSharedPreferences(
 				ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
+		updateSettings(true);
 		// mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
 		// Create a new Intent filter for the broadcast receiver

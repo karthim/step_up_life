@@ -1,12 +1,11 @@
 package hcc.stepuplife;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.os.Build;
 
 public class Settings extends Activity {
 
@@ -85,6 +83,7 @@ public class Settings extends Activity {
 
 		mFromNotifScreen = getIntent().getBooleanExtra(
 				"fromNotificationScreen", false);
+		Log.d("INFO", "mFromNotifScreen is " + mFromNotifScreen);
 		super.onResume();
 	}
 
@@ -144,7 +143,8 @@ public class Settings extends Activity {
 
 		Intent intentSettingsUpdate = new Intent(
 				StepUpLifeService.UPDATE_SETTINGS);
-		intentSettingsUpdate.putExtra("doNotRestart", true);
+		if (mFromNotifScreen)
+			intentSettingsUpdate.putExtra("doNotRestart", true);
 		sendBroadcast(intentSettingsUpdate);
 		StepUpLifeUtils.showToast(this, "Settings updated...");
 		finish();
