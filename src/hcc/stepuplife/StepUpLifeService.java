@@ -62,7 +62,7 @@ public class StepUpLifeService extends Service {
 	private static final long MILLISECS_PER_MIN = 60 * 1000;
 	public static int SNOOZE_MIN = 1;
 	// private static int msnoozemin = 1;
-	public static long IDLE_TIMEOUT_MIN = 1;
+	public static int IDLE_TIMEOUT_MIN = 1;
 	private static long SNOOZE_TIMEOUT_MILLISECS = SNOOZE_MIN
 			* MILLISECS_PER_MIN;
 	private static final String EXERCISE_TIMEOUT_INTENT_STRING = "hcc.stepuplife.exercise_timeout";
@@ -224,7 +224,11 @@ public class StepUpLifeService extends Service {
 		idleTimeNotifications = (int) (idleTime * 6); // 1 update in 10 secs so
 														// 6 updates per minute
 		SNOOZE_MIN = settings.getInt(hcc.stepuplife.Settings.SNOOZE_TIME,
-				SNOOZE_MIN); // Should use msnoozemin
+				SNOOZE_MIN);
+		Log.d(LOGTAG, "Idle min is now " + IDLE_TIMEOUT_MIN);
+		Log.d(LOGTAG, "Snooze min is now " + SNOOZE_MIN);// Should use
+															// msnoozemin
+		//
 		stopMonitoringActivity(false);
 		startMonitoringActivity();
 	}
@@ -288,6 +292,11 @@ public class StepUpLifeService extends Service {
 
 	private void startTimer(String intentString, long duration) {
 
+		Log.d(LOGTAG, "in startTimer: SNOOZE_TIMEOUT_MILLISECS ="
+				+ SNOOZE_TIMEOUT_MILLISECS);
+		Log.d(LOGTAG, "in startTimer: IDLE_TIMEOUT_MILLISECS ="
+				+ IDLE_TIMEOUT_MILLISECS);
+
 		if (intentString.equals(IDLE_TIMEOUT_INTENT_STRING)) {
 			long timeSinceLastIntent = getElapsedIdleTimeinMillisecs();
 			if (timeSinceLastIntent != -1
@@ -334,6 +343,7 @@ public class StepUpLifeService extends Service {
 			alarmManager.set(AlarmManager.RTC_WAKEUP, timeToWakeup,
 					snoozeWakeupPendingIntent);
 			Log.i(LOGTAG, "Started snooze timer");
+
 		} else if (intentString.equals(EXERCISE_TIMEOUT_INTENT_STRING)) {
 			if (exerciseTimeoutPendingIntent != null)
 				stopTimer(EXERCISE_TIMEOUT_INTENT_STRING);
@@ -526,7 +536,8 @@ public class StepUpLifeService extends Service {
 				CalendarEventManager.ALARM_INTENT_START_ACTION,
 				CalendarEventManager.ALARM_INTENT_STOP_ACTION,
 				ACTIVITY_GOT_INTENT_STRING, SNOOZE_WAKEUP_INTENT_STRING,
-				IDLE_TIMEOUT_INTENT_STRING, EXERCISE_TIMEOUT_INTENT_STRING };
+				IDLE_TIMEOUT_INTENT_STRING, EXERCISE_TIMEOUT_INTENT_STRING,
+				UPDATE_SETTINGS };
 
 		for (String intentFilterString : intentFilterStringArray) {
 			IntentFilter intentFiler = new IntentFilter(intentFilterString);
@@ -663,7 +674,7 @@ public class StepUpLifeService extends Service {
 		settings.edit().putBoolean("monitoring", true);
 		serviceState = ServiceState.RUNNING_MONITORING;
 		Log.d(LOGTAG, "Started activity monitoring");
-		startTimer(IDLE_TIMEOUT_INTENT_STRING, 5000L);
+		startTimer(IDLE_TIMEOUT_INTENT_STRING);
 
 	}
 
@@ -710,6 +721,7 @@ public class StepUpLifeService extends Service {
 		// serviceState = ServiceState.SNOOZE;
 		// Intent intent = new Intent(Home.SNOOZE);
 		// sendBroadcast(intent);
+		stopMonitoringActivity(false);
 		startTimer(SNOOZE_WAKEUP_INTENT_STRING);
 		StepUpLifeUtils.showToast(this, "OK ! I will remind you again in "
 				+ SNOOZE_MIN + " minutes");
