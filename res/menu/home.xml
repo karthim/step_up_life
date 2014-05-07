@@ -7,5 +7,9 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/action_settings"/>
-
+    <item
+        android:id="@+id/action_profile"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_Profile"/>
 </menu>

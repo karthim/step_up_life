@@ -225,6 +225,12 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 			startActivity(intent);
 			return true;
 		}
+		else if(id == R.id.action_profile)
+		{
+			Intent intent = new Intent(this, CreateProfileActivity.class);
+			startActivity(intent);
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
