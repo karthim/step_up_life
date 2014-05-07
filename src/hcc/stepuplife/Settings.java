@@ -91,6 +91,7 @@ public class Settings extends Activity {
     	settings.edit().putInt(SNOOZE_TIME, snoozetime).commit();
     	Intent intentSettingsUpdate = new Intent(StepUpLifeService.UPDATE_SETTINGS);
     	sendBroadcast(intentSettingsUpdate);
+    	finish();
     	
     }
 

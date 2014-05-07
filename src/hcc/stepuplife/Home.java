@@ -51,7 +51,7 @@ public class Home extends Activity implements ActionBar.OnNavigationListener,
 
 	private static final String START_TEXT = "Start !";
 	private static final String STOP_TEXT = "Stop !";
-	private static final String CREATE_PROFILE_TEXT = "Create Profile";
+	private static final String CREATE_PROFILE_TEXT = "\"Create Profile\"";
 	private REQUEST_TYPE mRequestType;
 
 	public static final String SNOOZE = "hcc.stepuplife.snooze";

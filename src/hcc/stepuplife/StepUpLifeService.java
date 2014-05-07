@@ -61,7 +61,7 @@ public class StepUpLifeService extends Service {
 
 	private static final long MILLISECS_PER_MIN = 60 * 1000;
 	private static int SNOOZE_MIN = 1;
-//	private static int msnoozemin = 1;
+	// private static int msnoozemin = 1;
 	private static long IDLE_TIMEOUT_MIN = 1;
 	private static long SNOOZE_TIMEOUT_MILLISECS = SNOOZE_MIN
 			* MILLISECS_PER_MIN;
@@ -225,6 +225,8 @@ public class StepUpLifeService extends Service {
 														// 6 updates per minute
 		SNOOZE_MIN = settings.getInt(hcc.stepuplife.Settings.SNOOZE_TIME,
 				SNOOZE_MIN); // Should use msnoozemin
+		stopMonitoringActivity(false);
+		startMonitoringActivity();
 	}
 
 	private boolean isUserMoving() {

@@ -22,9 +22,9 @@ public class SummaryActivity extends Activity implements OnClickListener {
 
 	private static final String LOGTAG = "hcc.stepuplife.notificationactivity";
 	private static final String STOP_HOME_ACTIVITY_INTENT = "hcc.stepuplife.homeclose";
-	private static final String GOAL_REACHED_CONGRATS_MSG = "Congrats ! You reached your goal !";
-	private static final String WAY_TO_GO_MSG = "Try harder, you can do it !";
-	private static final String DOING_GREAT_MSG = "You are on track !";
+	private static final String GOAL_REACHED_CONGRATS_MSG = "\"Congrats ! You reached your goal !\"";
+	private static final String WAY_TO_GO_MSG = "\"Try harder, you can do it !\"";
+	private static final String DOING_GREAT_MSG = "\"You are on track !\"";
 	private UserStats mStats;
 	private boolean mLaunchedFromService = false;
 

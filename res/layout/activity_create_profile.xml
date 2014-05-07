@@ -22,7 +22,7 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/yellow"
         android:gravity="center"
-        android:text="Create Profile"
+        android:text="PROFILE"
         android:textSize="20dp"
         android:textStyle="bold" />
 

@@ -19,13 +19,13 @@ public class StepUpLifeUtils {
 	private static final int MORNING_THRESHOLD = 6;
 
 	private static final int SLEEP_THRESHOLD_PM = 21;
-	private static final String SLEEP_MSG = "Time to sleep, buddy !";
-	private static final String STOPPED_GOOD_MORNING_MSG = "Good Morning ! Ready to start ?";
-	private static final String STARTED_GOOD_MORNING_MSG = "How is the afternoon going ?";
-	private static final String STARTED_GOOD_AFTERNOON_MSG = "How is the afternoon going ?";
-	private static final String STOPPED_GOOD_AFTERNOON_MSG = "How is the afternoon going ?";
-	private static final String STARTED_EVENING_MSG = "Having a great evening ?";
-	private static final String STOPPED_EVENING_MSG = "Having a great evening ?";
+	private static final String SLEEP_MSG = "\"Time to sleep, buddy !\"";
+	private static final String STOPPED_GOOD_MORNING_MSG = "\"Good Morning ! Ready to start ?\"";
+	private static final String STARTED_GOOD_MORNING_MSG = "\"How is the morning going ?\"";
+	private static final String STARTED_GOOD_AFTERNOON_MSG = "\"How is the afternoon going ?\"";
+	private static final String STOPPED_GOOD_AFTERNOON_MSG = "\"How is the afternoon going ?\"";
+	private static final String STARTED_EVENING_MSG = "\"Having a great evening ?\"";
+	private static final String STOPPED_EVENING_MSG = "\"Having a great evening ?\"";
 
 	public static final boolean DEBUG = true;
 	public static final boolean DISABLE_EXERCISE_TIMEOUT = true;
@@ -77,7 +77,6 @@ public class StepUpLifeUtils {
 
 	public static int getBgImage() {
 		Calendar rightNow = Calendar.getInstance();
-		rightNow.setTimeZone(TimeZone.getDefault());
 		int hourOfday = rightNow.get(Calendar.HOUR_OF_DAY);
 
 		if (hourOfday < NOON_PM && hourOfday >= MORNING_THRESHOLD) {
@@ -93,6 +92,7 @@ public class StepUpLifeUtils {
 		Calendar rightNow = Calendar.getInstance();
 		rightNow.setTimeZone(TimeZone.getDefault());
 		int hourOfday = rightNow.get(Calendar.HOUR_OF_DAY);
+		Log.d("INFO", "Hour of day is" + hourOfday);
 
 		if (hourOfday < NOON_PM && hourOfday >= MORNING_THRESHOLD) {
 			if (isStarted)
