@@ -234,7 +234,7 @@ public class StepUpLifeService extends Service {
 		Log.d(LOGTAG, "Snooze min is now " + SNOOZE_MIN);// Should use
 															// msnoozemin
 		//
-		if (!isMonitoring()) {
+		if (!isMonitoring() || doNotRestart) {
 			Log.d(LOGTAG, "Monitoring off, Updated timeouts but wont restart");
 			return;
 		}
